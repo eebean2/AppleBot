@@ -20,6 +20,7 @@ var commandPerms: [UInt64: [[String: [UInt64]]]] = [406145333916205076:[[Command
 enum Command: String {
     case test = "test"
     case uptime = "uptime"
+    case limitCommand = "limitcommand"
     
     var string: String { return toString() }
     

@@ -7,36 +7,85 @@
 
 import Sword
 
+enum ParserError: Error {
+    case missingCommand
+    case missingModifier
+}
+
 class Parser {
     
     var command: Command?
+    var modifier: String?
     var against: UInt64?
     var reason: String?
     var remainder: String?
+    var remainderSeporated: [String]?
     
     // MARK: -Parse
     
-    func parse(msg: Message) {
+    func parse(msg: Message, hasModifier: Bool, completion: (_ success: Bool, _ error: Error?) -> Void) {
         let comp = seporate(msg: msg)
         if comp.first != nil {
             command = Command(rawValue: comp.first!.dropFirst().lowercased())
-        } else { return }
-        if comp.count > 1 {
-            if comp[1].starts(with: "<") {
-                against = msg.mentions.first?.id.rawValue
-            } else if UInt64(comp[1]) != nil {
-                against = UInt64(comp[1])
+        } else {
+            msg.reply(with: "An unknown error has occurred. Please try again!")
+            completion(false, ParserError.missingCommand)
+            return
+        }
+        if hasModifier {
+            if comp.count > 1 {
+                if comp[1].starts(with: "<") {
+                    completion(false, ParserError.missingModifier)
+                    return
+                } else {
+                    modifier = comp[1]
+                    if comp.count > 2 {
+                        if comp[2].starts(with: "<") {
+                            against = msg.mentions.first?.id.rawValue
+                        } else if UInt64(comp[2]) != nil {
+                            against = UInt64(comp[2])
+                        }
+                    }
+                }
+            } else {
+                completion(false, ParserError.missingModifier)
+                return
+            }
+        } else {
+            if comp.count > 1 {
+                if comp[1].starts(with: "<") {
+                    against = msg.mentions.first?.id.rawValue
+                } else if UInt64(comp[1]) != nil {
+                    against = UInt64(comp[1])
+                }
             }
         }
         if against == nil {
-            if comp.count > 1 {
-                remainder = comp.dropFirst().joined(separator: " ")
+            if hasModifier {
+                if comp.count > 2 {
+                    remainder = comp.dropFirst(2).joined(separator: " ")
+                    remainderSeporated = comp.dropFirst(2).array
+                }
+            } else {
+                if comp.count > 1 {
+                    remainder = comp.dropFirst().joined(separator: " ")
+                    remainderSeporated = comp.dropFirst().array
+                }
             }
         } else {
-            if comp.count > 2 {
-                reason = comp.dropFirst().dropFirst().joined(separator: " ")
+            if hasModifier {
+                if comp.count > 3 {
+                    reason = comp.dropFirst(3).joined(separator: " ")
+                    remainderSeporated = comp.dropFirst(3).array
+                }
+            } else {
+                if comp.count > 2 {
+                    reason = comp.dropFirst(2).joined(separator: " ")
+                    remainderSeporated = comp.dropFirst(2).array
+                }
             }
         }
+        completion(true, nil)
     }
     
     // MARK: -Parse Helpers
