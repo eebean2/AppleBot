@@ -11,37 +11,54 @@ import Foundation
 class CommandCenter {
     
     func commandCheck(_ msg: Message) {
-        if msg.content.first == indicator.first {
+        
+        if isSaving {
+            msg.reply(with: "**ERROR:** I cannot do that while saving data, please try again when finished.")
+            return
+        }
+        
+        let i: Character = indicator[Parser.getGuildID(msg: msg)]?.first ?? "!".first!
+        
+        if msg.content.first == i {
             
             // MARK:- Ping
             
-            if msg.content.starts(with: "\(indicator)ping") {
+            if msg.content.starts(with: "\(i)ping") {
                 msg.reply(with: "Pong!")
             }
             
             // MARK:- Test Method
             
-            if msg.content.starts(with: "\(indicator)test") {
+            if msg.content.starts(with: "\(i)test") {
                 if !Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
                     unauthorizedReply(msg: msg)
                     return
                 }
 // TEST METHODS HERE --------------------------------------------
                 
-                msg.reply(with: "Server ID: \(Parser.getGuildID(msg: msg))")
-                msg.reply(with: commandPerms.description)
+                Parser().saveToDisc(msg: msg)
+                Parser().readData(msg: msg)
+                
+                var testResponse = Embed()
+                testResponse.color = 0x00FFFF
+                testResponse.title = "Test Completed:"
+//                testResponse.description = """
+//                **Error:** \(err?.localizedDescription ?? "No Error")
+//                """
+                msg.reply(with: testResponse)
                 
 // END OF TEST METHOD -------------------------------------------
                 
                 var e = Embed()
-                e.color = 000000
-                e.description = "**Test Complete!** Please check Xcode's logs!"
+                e.title = "Reminder:"
+                e.color = 0x00FFFF
+                e.description = "Don't forget to check Xcode's logs!"
                 msg.reply(with: e)
             }
             
             // MARK:- Shutdown
             
-            if msg.content.starts(with: "\(indicator)shutdown") {
+            if msg.content.starts(with: "\(i)shutdown") {
                 let check = Parser.creatorCheck(ID: Parser.getUserID(msg: msg))
                 if check {
                     var e = Embed()
@@ -49,7 +66,9 @@ class CommandCenter {
                     e.description = "*Thank you for using AppleBot!*"
                     msg.reply(with: e)
                     bot.disconnect()
-                    exit(EXIT_SUCCESS)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                        exit(EXIT_SUCCESS)
+                    }
                 } else {
                     msg.reply(with: "Sorry, I can not do that for you.")
                 }
@@ -57,7 +76,7 @@ class CommandCenter {
             
             // MARK:- Limit Commands
             
-            if msg.content.starts(with: "\(indicator)limitCommand") {
+            if msg.content.starts(with: "\(i)limitCommand") {
                 
                 let parser = Parser()
                 parser.parse(msg: msg, hasModifier: true) { (success, error) in
@@ -95,7 +114,7 @@ class CommandCenter {
             
             // MARK:- Uptime
             
-            if msg.content.starts(with: "\(indicator)uptime") {
+            if msg.content.starts(with: "\(i)uptime") {
                 let perms = commandPerms[Parser.getGuildID(msg: msg)]
                 if Parser.permissionCheck(perms: perms!, command:
                     "uptime", msg: msg) {

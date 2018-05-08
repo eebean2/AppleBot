@@ -6,6 +6,7 @@
 //
 
 import Sword
+import Foundation
 
 enum ParserError: Error {
     case missingCommand
@@ -88,10 +89,105 @@ class Parser {
         completion(true, nil)
     }
     
+    func saveToDisc(msg: Message?) {
+        var e = Embed()
+        e.title = "Saving..."
+        e.description = "Most commands will not function during this process!"
+        e.color = 0xFFFFFF
+        if msg != nil {
+            msg!.reply(with: e)
+        } else {
+            bot.send(e, to: Snowflake(rawValue: testChannel))
+        }
+        isSaving = true
+        
+        do {
+            let perms = commandPerms as [NSNumber: [[NSString: [NSNumber]]]] //as NSDictionary
+print("Command Perms:")
+print(perms)
+            var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
+print("Command Path - Pre Append")
+print(path)
+            path.append("/AppleBot/test.plist")
+print("Command Path - Post Append")
+print(path)
+//            try d.write(to: URL(fileURLWithPath: path))
+            if FileManager.default.fileExists(atPath: path) {
+                
+            } else {
+//                let d: Data = try PropertyListSerialization.data(fromPropertyList: perms, format: .xml, options: 0)
+//print("Command Data")
+//print(d)
+                let d = NSKeyedArchiver.archivedData(withRootObject: perms)
+                FileManager.default.createFile(atPath: path, contents: d, attributes: nil)
+            }
+            e.title = "Save complete"
+            e.description = "You can now resume bot use"
+            if msg != nil {
+                msg!.reply(with: e)
+            } else {
+                bot.send(e, to: Snowflake(rawValue: testChannel))
+            }
+            isSaving = false
+        }
+    }
+    
+    func readData(msg: Message?) {
+        var e = EmbedReply.getEmbed(withTitle: "Loading Settings", message: nil, color: .system)
+        if msg != nil {
+            msg!.reply(with: e)
+        } else {
+            bot.send(e, to: Snowflake(rawValue: testChannel))
+        }
+        isSaving = true
+        var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
+        path.append("/AppleBot/test.plist")
+        let plist = FileManager.default.contents(atPath: path)
+        if plist != nil {
+            let dict = NSKeyedUnarchiver.unarchiveObject(with: plist!) as? [UInt64: [[String: [UInt64]]]]
+            if dict != nil {
+                commandPerms = dict!
+                e.title = "Settings Loaded"
+                if msg != nil {
+                    msg!.reply(with: e)
+                } else {
+                    bot.send(e, to: Snowflake(rawValue: testChannel))
+                }
+            } else {
+                e.title = "Error"
+                e.description = "No permission data found"
+                e.color = ABColor.alert.intColor
+                if msg != nil {
+                    msg!.reply(with: e)
+                } else {
+                    bot.send(e, to: Snowflake(rawValue: testChannel))
+                }
+            }
+        } else {
+            e.title = "Error"
+            e.description = "No permission setting document found, this error needs to be handled better in future bot versions"
+            e.color = ABColor.alert.intColor
+            if msg != nil {
+                msg!.reply(with: e)
+            } else {
+                bot.send(e, to: Snowflake(rawValue: testChannel))
+            }
+        }
+        isSaving = false
+    }
+    
     // MARK: -Parse Helpers
     
     private func seporate(msg: Message) -> [String] {
         return msg.content.components(separatedBy: " ")
+    }
+    
+    private func getPreferances() -> NSDictionary {
+        var pref = [NSString: Any]()
+        pref["commandperms"] = commandPerms as [NSNumber: [[NSString: [NSNumber]]]]
+        pref["indicator"] = indicator
+        pref["botChannel"] = botChannel
+        return pref as NSDictionary
     }
     
     // MARK: -Static Parsers
