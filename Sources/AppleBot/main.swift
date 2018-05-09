@@ -3,10 +3,7 @@ import Foundation
 
 let bot = Sword(token: botToken)
 
-bot.send(EmbedReply.getEmbed(withTitle: "Apple Bot is Now Starting", message: nil, color: .system), to: Snowflake(rawValue: testChannel))
-bot.editStatus(to: "online", playing: "with the!")
-
-Parser().readData(msg: nil)
+botStartup()
 
 bot.on(Event.guildIntegrationsUpdate) { data in
     print("GUILD INTERACTIONS UPDATE FOLLOWING\n")

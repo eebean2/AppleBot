@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		7318022820A0BB44003B2494 /* Embed+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7318022720A0BB44003B2494 /* Embed+Helper.swift */; };
+		735743D420A1F10100445D92 /* Startup+Shutdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735743D320A1F10100445D92 /* Startup+Shutdown.swift */; };
+		735743D620A203B600445D92 /* InfractionTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735743D520A203B600445D92 /* InfractionTable.swift */; };
 		73F681A6209BC66C003B6A3E /* Data+Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F681A5209BC66C003B6A3E /* Data+Parser.swift */; };
 		73F681A8209BC6A5003B6A3E /* Data+Basics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F681A7209BC6A5003B6A3E /* Data+Basics.swift */; };
 		73F681AA209BD282003B6A3E /* CommandCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F681A9209BD282003B6A3E /* CommandCenter.swift */; };
@@ -367,6 +369,8 @@
 
 /* Begin PBXFileReference section */
 		7318022720A0BB44003B2494 /* Embed+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Embed+Helper.swift"; sourceTree = "<group>"; };
+		735743D320A1F10100445D92 /* Startup+Shutdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Startup+Shutdown.swift"; sourceTree = "<group>"; };
+		735743D520A203B600445D92 /* InfractionTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfractionTable.swift; sourceTree = "<group>"; };
 		73F681A5209BC66C003B6A3E /* Data+Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Parser.swift"; sourceTree = "<group>"; };
 		73F681A7209BC6A5003B6A3E /* Data+Basics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Basics.swift"; sourceTree = "<group>"; };
 		73F681A9209BD282003B6A3E /* CommandCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandCenter.swift; sourceTree = "<group>"; };
@@ -972,6 +976,8 @@
 				73F681A7209BC6A5003B6A3E /* Data+Basics.swift */,
 				73F681A5209BC66C003B6A3E /* Data+Parser.swift */,
 				7318022720A0BB44003B2494 /* Embed+Helper.swift */,
+				735743D320A1F10100445D92 /* Startup+Shutdown.swift */,
+				735743D520A203B600445D92 /* InfractionTable.swift */,
 			);
 			name = AppleBot;
 			path = Sources/AppleBot;
@@ -1337,7 +1343,9 @@
 			buildActionMask = 0;
 			files = (
 				73F681A8209BC6A5003B6A3E /* Data+Basics.swift in Sources */,
+				735743D420A1F10100445D92 /* Startup+Shutdown.swift in Sources */,
 				73F681A6209BC66C003B6A3E /* Data+Parser.swift in Sources */,
+				735743D620A203B600445D92 /* InfractionTable.swift in Sources */,
 				OBJ_184 /* main.swift in Sources */,
 				7318022820A0BB44003B2494 /* Embed+Helper.swift in Sources */,
 				73F681AA209BD282003B6A3E /* CommandCenter.swift in Sources */,

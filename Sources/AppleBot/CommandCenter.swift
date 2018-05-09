@@ -21,6 +21,26 @@ class CommandCenter {
         
         if msg.content.first == i {
             
+            // MARK:- Add Role
+            if msg.content.starts(with: "\(i)addRole") {
+                
+            }
+            
+            if msg.content.starts(with: "\(i)rma") {
+                if msg.mentionedRoles.isEmpty {
+                    error("Error Adding Role", error: "No role found", inReplyTo: msg)
+                } else {
+                    Parser().parse(msg: msg, hasModifier: false) { (_, e) in
+                        if e != nil {
+                            error("Could not save role", error: e!.localizedDescription, inReplyTo: msg)
+                        } else {
+                            
+                        }
+                    }
+                    
+                }
+            }
+            
             // MARK:- Ping
             
             if msg.content.starts(with: "\(i)ping") {
@@ -37,7 +57,6 @@ class CommandCenter {
 // TEST METHODS HERE --------------------------------------------
                 
                 Parser().saveToDisc(msg: msg)
-                Parser().readData(msg: msg)
                 
                 var testResponse = Embed()
                 testResponse.color = 0x00FFFF
@@ -61,16 +80,9 @@ class CommandCenter {
             if msg.content.starts(with: "\(i)shutdown") {
                 let check = Parser.creatorCheck(ID: Parser.getUserID(msg: msg))
                 if check {
-                    var e = Embed()
-                    e.color = 00000
-                    e.description = "*Thank you for using AppleBot!*"
-                    msg.reply(with: e)
-                    bot.disconnect()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                        exit(EXIT_SUCCESS)
-                    }
+                    botShutdown(msg: msg)
                 } else {
-                    msg.reply(with: "Sorry, I can not do that for you.")
+                    EmbedReply().error(on: msg, error: "Sorry, I can not do that for you")
                 }
             }
             
@@ -124,7 +136,23 @@ class CommandCenter {
                 }
             }
             
-            
+            if msg.content.starts(with: "\(i)setStatus") {
+                if Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
+                    let p = Parser()
+                    p.parse(msg: msg, hasModifier: false) { (success, error) in
+                        if error != nil {
+                            EmbedReply().error(on: msg, error: "Cound not change status: \(error!.localizedDescription)")
+                        } else {
+                            if p.remainder != nil {
+                                bot.editStatus(to: "online", playing: p.remainder!)
+                                EmbedReply().reply(to: msg, title: "Status Updated", message: nil, color: .system)
+                            } else {
+                                EmbedReply().error(on: msg, error: "Cound not change status: No status found")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     
