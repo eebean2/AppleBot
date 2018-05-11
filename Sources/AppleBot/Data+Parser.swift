@@ -17,47 +17,50 @@ class Parser {
     
     var command: Command?
     var modifier: String?
-    var against: UInt64?
+    var against: User?
+    var againstID: UInt64?
+    var accusor: User?
     var reason: String?
     var remainder: String?
     var remainderSeporated: [String]?
     
     // MARK: -Parse
     
-    func parse(msg: Message, hasModifier: Bool, completion: (_ success: Bool, _ error: Error?) -> Void) {
+    func parse(msg: Message, hasModifier: Bool, completion: (_ parser: Parser, _ error: ParserError?) -> Void) {
+        accusor = msg.author
         let comp = seporate(msg: msg)
         if comp.first != nil {
             command = Command(rawValue: comp.first!.dropFirst().lowercased())
         } else {
             msg.reply(with: "An unknown error has occurred. Please try again!")
-            completion(false, ParserError.missingCommand)
+            completion(self, ParserError.missingCommand)
             return
         }
         if hasModifier {
             if comp.count > 1 {
                 if comp[1].starts(with: "<") {
-                    completion(false, ParserError.missingModifier)
+                    completion(self, ParserError.missingModifier)
                     return
                 } else {
                     modifier = comp[1]
                     if comp.count > 2 {
                         if comp[2].starts(with: "<") {
-                            against = msg.mentions.first?.id.rawValue
+                            against = msg.mentions.first
                         } else if UInt64(comp[2]) != nil {
-                            against = UInt64(comp[2])
+                            againstID = UInt64(comp[2])
                         }
                     }
                 }
             } else {
-                completion(false, ParserError.missingModifier)
+                completion(self, ParserError.missingModifier)
                 return
             }
         } else {
             if comp.count > 1 {
                 if comp[1].starts(with: "<") {
-                    against = msg.mentions.first?.id.rawValue
+                    against = msg.mentions.first
                 } else if UInt64(comp[1]) != nil {
-                    against = UInt64(comp[1])
+                    againstID = UInt64(comp[1])
                 }
             }
         }
@@ -86,7 +89,7 @@ class Parser {
                 }
             }
         }
-        completion(true, nil)
+        completion(self, nil)
     }
     
     func saveToDisc(msg: Message?) {
@@ -146,6 +149,7 @@ print(path)
         pref["indicator"] = indicator
         pref["botchannel"] = botChannel
         pref["status"] = status
+        pref["roles"] = assignableRoles
         return pref as NSDictionary
     }
     
@@ -154,6 +158,11 @@ print(path)
         indicator = dict["indicator"] as! [UInt64: String]
         botChannel = dict["botchannel"] as! [UInt64: UInt64]
         status = dict["status"] as! String
+        let r = dict["roles"] as? [UInt64: [Role]]
+        if r != nil {
+            assignableRoles = r!
+            print(assignableRoles)
+        }
     }
     
     // MARK: -Static Parsers

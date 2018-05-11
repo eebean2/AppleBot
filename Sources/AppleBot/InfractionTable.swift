@@ -19,7 +19,7 @@ enum InfractionType: String {
 
 class InfractionManagement {
     func new(_ infraction: Infraction, onGuild guild: UInt64) {
-        
+        saveInfractionTable(inf: infraction, guild: guild)
     }
     
     func summary(_ user: UInt64, onGuild guild: UInt64, withMsg msg: Message) {
@@ -48,7 +48,8 @@ class InfractionManagement {
         for guild in approvedServers {
             var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
             path.append("/AppleBot/\(guild).plist")
-            bot.getGuild(Snowflake(rawValue: guild)) { (g, e) in
+            let sf = Snowflake(rawValue: guild)
+            bot.getGuild(sf, rest: true) { (g, e: RequestError?) in
                 if g != nil {
                     if FileManager.default.fileExists(atPath: path) {
                         message("Infraction table found for guild \(g!.name)")
@@ -57,7 +58,9 @@ class InfractionManagement {
                     }
                 } else {
                     if e != nil {
-                        error("Could not get guild names", error: e!.localizedDescription)
+                        error("Could not get guild name.", error: e!.message)
+                    } else {
+                        print("Guild not found, no error found")
                     }
                     if FileManager.default.fileExists(atPath: path) {
                         message("Infraction table found for guild \(guild)")
@@ -70,12 +73,17 @@ class InfractionManagement {
         }
     }
     
-    func loadInfractionTable() {
-        
+    func loadInfractionTable() -> NSDictionary {
+        return NSDictionary()
     }
     
-    func saveInfractionTable() {
-        
+    func saveInfractionTable(inf: Infraction, guild: UInt64) {
+        print("New infraction on Guild: \(guild)")
+        print("ID: \(inf.id)")
+        print("Type: \(inf.type.rawValue)")
+        print("Offender: \(inf.offender?.username ?? "Missing Offender")")
+        print("Accuser: \(inf.accuser.username ?? "Missing Accuser")")
+        print("Reason: \(inf.reason ?? "No Reason Specified")")
     }
 }
 
@@ -83,7 +91,8 @@ struct Infraction {
     var id: Int
     var reason: String?
     var type: InfractionType
-    var offender: User
+    var offender: User?
+    var forceban: UInt64?
     var accuser: User
     var occuredOn: Date
     var expiresOn: Date?

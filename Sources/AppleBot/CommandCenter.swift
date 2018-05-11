@@ -26,18 +26,31 @@ class CommandCenter {
                 
             }
             
-            if msg.content.starts(with: "\(i)rma") {
-                if msg.mentionedRoles.isEmpty {
-                    error("Error Adding Role", error: "No role found", inReplyTo: msg)
-                } else {
-                    Parser().parse(msg: msg, hasModifier: false) { (_, e) in
-                        if e != nil {
-                            error("Could not save role", error: e!.localizedDescription, inReplyTo: msg)
+            if msg.content.starts(with: "\(i)rm") {
+                Parser().parse(msg: msg, hasModifier: true) { (p, e) in
+                    if e != nil {
+                        if e == ParserError.missingModifier {
+                            error("Missing Command", error: "Try `rma help` for a list of commands", inReplyTo: msg)
                         } else {
-                            
+                            error("Unknown Parsing Error")
                         }
+                    } else {
+                        RoleManager().rm(msg: msg, parser: p)
                     }
-                    
+                }
+            }
+            
+            if msg.content.starts(with: "\(i)rma") {
+                Parser().parse(msg: msg, hasModifier: true) { (p, e: ParserError?) in
+                    if e != nil {
+                        if e == ParserError.missingModifier {
+                            error("Missing Command", error: "Try `rma help` for a list of commands", inReplyTo: msg)
+                        } else {
+                            error("Unknown Parsing Error")
+                        }
+                    } else {
+                        RoleManager().rma(msg: msg, parser: p)
+                    }
                 }
             }
             
@@ -55,16 +68,23 @@ class CommandCenter {
                     return
                 }
 // TEST METHODS HERE --------------------------------------------
+                Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+                    if e != nil {
+                        error("Parsing Error", error: e!.localizedDescription, inReplyTo: msg)
+                    } else {
+                        let inf = Infraction(id: 1, reason: p.reason, type: .warning, offender: p.against, forceban: nil, accuser: p.accusor!, occuredOn: Date(), expiresOn: nil)
+                        InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
+                        EmbedReply().reply(to: msg, title: "Test Completed", message: nil, color: .testing)
+                    }
+                }
                 
-                Parser().saveToDisc(msg: msg)
-                
-                var testResponse = Embed()
-                testResponse.color = 0x00FFFF
-                testResponse.title = "Test Completed:"
-//                testResponse.description = """
-//                **Error:** \(err?.localizedDescription ?? "No Error")
-//                """
-                msg.reply(with: testResponse)
+//                var testResponse = Embed()
+//                testResponse.color = 0x00FFFF
+//                testResponse.title = "Test Completed:"
+////                testResponse.description = """
+////                **Error:** \(err?.localizedDescription ?? "No Error")
+////                """
+//                msg.reply(with: testResponse)
                 
 // END OF TEST METHOD -------------------------------------------
                 
@@ -89,28 +109,26 @@ class CommandCenter {
             // MARK:- Limit Commands
             
             if msg.content.starts(with: "\(i)limitCommand") {
-                
-                let parser = Parser()
-                parser.parse(msg: msg, hasModifier: true) { (success, error) in
-                    if error != nil {
-                        let error = error as! ParserError
-                        if error == .missingModifier {
+                Parser().parse(msg: msg, hasModifier: true) { (p, e) in
+                    if e != nil {
+                        let e = e as! ParserError
+                        if e == .missingModifier {
                             missingArg(msg: msg)
                         }
                     } else {
-                        if parser.modifier != nil {
-                            print(parser.command?.rawValue ?? "Command Error")
-                            print(parser.modifier!)
+                        if p.modifier != nil {
+                            print(p.command?.rawValue ?? "Command Error")
+                            print(p.modifier!)
                             print(msg.mentionedRoles)
-                            if checkPermExist(command: parser.command!, guild: Parser.getGuildID(msg: msg)) {
+                            if checkPermExist(command: p.command!, guild: Parser.getGuildID(msg: msg)) {
                                 if !msg.mentionedRoles.isEmpty {
-                                    updateCommandPerm(guild: Parser.getGuildID(msg: msg), command: parser.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
+                                    updateCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
                                 } else {
                                     missingArg(msg: msg)
                                 }
                             } else {
                                 if !msg.mentionedRoles.isEmpty {
-                                    setCommandPerm(guild: Parser.getGuildID(msg: msg), command: parser.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
+                                    setCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
                                 } else {
                                     missingArg(msg: msg)
                                 }
@@ -138,8 +156,7 @@ class CommandCenter {
             
             if msg.content.starts(with: "\(i)setStatus") {
                 if Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
-                    let p = Parser()
-                    p.parse(msg: msg, hasModifier: false) { (success, error) in
+                    Parser().parse(msg: msg, hasModifier: false) { (p, error) in
                         if error != nil {
                             EmbedReply().error(on: msg, error: "Cound not change status: \(error!.localizedDescription)")
                         } else {
