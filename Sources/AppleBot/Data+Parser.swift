@@ -92,49 +92,6 @@ class Parser {
         completion(self, nil)
     }
     
-    func saveToDisc(msg: Message?) {
-        var e = Embed()
-        e.title = "Saving..."
-        e.description = "Most commands will not function during this process!"
-        e.color = 0xFFFFFF
-        if msg != nil {
-            msg!.reply(with: e)
-        } else {
-            bot.send(e, to: Snowflake(rawValue: testChannel!))
-        }
-        isSaving = true
-        
-        do {
-            let perms = commandPerms as [NSNumber: [[NSString: [NSNumber]]]] //as NSDictionary
-print("Command Perms:")
-print(perms)
-            var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
-print("Command Path - Pre Append")
-print(path)
-            path.append("/AppleBot/test.plist")
-print("Command Path - Post Append")
-print(path)
-//            try d.write(to: URL(fileURLWithPath: path))
-            if FileManager.default.fileExists(atPath: path) {
-                
-            } else {
-//                let d: Data = try PropertyListSerialization.data(fromPropertyList: perms, format: .xml, options: 0)
-//print("Command Data")
-//print(d)
-                let d = NSKeyedArchiver.archivedData(withRootObject: perms)
-                FileManager.default.createFile(atPath: path, contents: d, attributes: nil)
-            }
-            e.title = "Save complete"
-            e.description = "You can now resume bot use"
-            if msg != nil {
-                msg!.reply(with: e)
-            } else {
-                bot.send(e, to: Snowflake(rawValue: testChannel!))
-            }
-            isSaving = false
-        }
-    }
-    
    
     
     // MARK: -Parse Helpers
@@ -158,10 +115,9 @@ print(path)
         indicator = dict["indicator"] as! [UInt64: String]
         botChannel = dict["botchannel"] as! [UInt64: UInt64]
         status = dict["status"] as! String
-        let r = dict["roles"] as? [UInt64: [Role]]
+        let r = dict["roles"] as? [UInt64: [String: UInt64]]
         if r != nil {
             assignableRoles = r!
-            print(assignableRoles)
         }
     }
     
@@ -199,12 +155,13 @@ print(path)
             urid.append(r.id.rawValue)
         }
         for i in perms {
+            if !i.keys.contains(command) {
+                return true
+            }
             for p in i {
                 if p.key == command {
                     id = p.value
-                    
                     let j = urid.filter{id.contains($0)}
-                    
                     if !j.isEmpty {
                         return true
                     } else {
@@ -213,7 +170,33 @@ print(path)
                 }
             }
         }
+        error("Unknown Permission Failure", inReplyTo: msg)
         print("Unknown Permission Failure at \(#function) for guild \(Parser.getGuildID(msg: msg)). Returning False.")
         return false
+    }
+    
+    static func getCommand(msg: Message) -> String? {
+        if msg.content.components(separatedBy: " ").first?.first == indicator[Parser.getGuildID(msg: msg)]?.first {
+            let command = msg.content.components(separatedBy: " ").first!.dropFirst().lowercased()
+            if creatorcommands.contains(command) {
+                if creatorCheck(ID: Parser.getUserID(msg: msg)) {
+                    return command
+                } else {
+                    return nil
+                }
+            } else {
+                if commandPerms[Parser.getGuildID(msg: msg)] != nil {
+                    if permissionCheck(perms: commandPerms[Parser.getGuildID(msg: msg)]!, command: command, msg: msg) {
+                        return command
+                    } else {
+                        return nil
+                    }
+                } else {
+                    return nil
+                }
+            }
+        } else {
+            return nil
+        }
     }
 }

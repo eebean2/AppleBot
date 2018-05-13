@@ -10,10 +10,11 @@
 		7318022820A0BB44003B2494 /* Embed+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7318022720A0BB44003B2494 /* Embed+Helper.swift */; };
 		735743D420A1F10100445D92 /* Startup+Shutdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735743D320A1F10100445D92 /* Startup+Shutdown.swift */; };
 		735743D620A203B600445D92 /* InfractionTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735743D520A203B600445D92 /* InfractionTable.swift */; };
+		73599F4520A89C8B0031216C /* Help.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73599F4420A89C8B0031216C /* Help.swift */; };
 		7390035B20A4AAB60038C102 /* RoleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7390035A20A4AAB60038C102 /* RoleManager.swift */; };
+		73B44B9820A87B0500E9DB4D /* CommandCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B44B9720A87B0500E9DB4D /* CommandCenter.swift */; };
 		73F681A6209BC66C003B6A3E /* Data+Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F681A5209BC66C003B6A3E /* Data+Parser.swift */; };
 		73F681A8209BC6A5003B6A3E /* Data+Basics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F681A7209BC6A5003B6A3E /* Data+Basics.swift */; };
-		73F681AA209BD282003B6A3E /* CommandCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F681A9209BD282003B6A3E /* CommandCenter.swift */; };
 		OBJ_184 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* main.swift */; };
 		OBJ_186 /* Sword.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Sword::Sword::Product" /* Sword.framework */; };
 		OBJ_187 /* Sockets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Sockets::Sockets::Product" /* Sockets.framework */; };
@@ -372,10 +373,11 @@
 		7318022720A0BB44003B2494 /* Embed+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Embed+Helper.swift"; sourceTree = "<group>"; };
 		735743D320A1F10100445D92 /* Startup+Shutdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Startup+Shutdown.swift"; sourceTree = "<group>"; };
 		735743D520A203B600445D92 /* InfractionTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfractionTable.swift; sourceTree = "<group>"; };
+		73599F4420A89C8B0031216C /* Help.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Help.swift; sourceTree = "<group>"; };
 		7390035A20A4AAB60038C102 /* RoleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleManager.swift; sourceTree = "<group>"; };
+		73B44B9720A87B0500E9DB4D /* CommandCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandCenter.swift; sourceTree = "<group>"; };
 		73F681A5209BC66C003B6A3E /* Data+Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Parser.swift"; sourceTree = "<group>"; };
 		73F681A7209BC6A5003B6A3E /* Data+Basics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Basics.swift"; sourceTree = "<group>"; };
-		73F681A9209BD282003B6A3E /* CommandCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandCenter.swift; sourceTree = "<group>"; };
 		73F681AB209BDA36003B6A3E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		"AppleBot::AppleBot::Product" /* AppleBot */ = {isa = PBXFileReference; lastKnownFileType = text; path = AppleBot; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Bits::Bits::Product" /* Bits.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Bits.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -974,13 +976,14 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_9 /* main.swift */,
-				73F681A9209BD282003B6A3E /* CommandCenter.swift */,
 				73F681A7209BC6A5003B6A3E /* Data+Basics.swift */,
 				73F681A5209BC66C003B6A3E /* Data+Parser.swift */,
 				7318022720A0BB44003B2494 /* Embed+Helper.swift */,
 				735743D320A1F10100445D92 /* Startup+Shutdown.swift */,
 				735743D520A203B600445D92 /* InfractionTable.swift */,
 				7390035A20A4AAB60038C102 /* RoleManager.swift */,
+				73B44B9720A87B0500E9DB4D /* CommandCenter.swift */,
+				73599F4420A89C8B0031216C /* Help.swift */,
 			);
 			name = AppleBot;
 			path = Sources/AppleBot;
@@ -1347,12 +1350,13 @@
 			files = (
 				73F681A8209BC6A5003B6A3E /* Data+Basics.swift in Sources */,
 				7390035B20A4AAB60038C102 /* RoleManager.swift in Sources */,
+				73599F4520A89C8B0031216C /* Help.swift in Sources */,
 				735743D420A1F10100445D92 /* Startup+Shutdown.swift in Sources */,
 				73F681A6209BC66C003B6A3E /* Data+Parser.swift in Sources */,
 				735743D620A203B600445D92 /* InfractionTable.swift in Sources */,
 				OBJ_184 /* main.swift in Sources */,
 				7318022820A0BB44003B2494 /* Embed+Helper.swift in Sources */,
-				73F681AA209BD282003B6A3E /* CommandCenter.swift in Sources */,
+				73B44B9820A87B0500E9DB4D /* CommandCenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

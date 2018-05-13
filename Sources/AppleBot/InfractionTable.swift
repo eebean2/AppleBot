@@ -124,7 +124,7 @@ struct Infraction {
         id = data["id"] as! Int
         reason = data["reason"] as? String
         type = InfractionType(rawValue: data["type"] as! String)!
-        offender = data["offender"] as! User
+        offender = data["offender"] as? User
         accuser = data["accuser"] as! User
         occuredOn = data["on"] as! Date
         expiresOn = data["expires"] as? Date

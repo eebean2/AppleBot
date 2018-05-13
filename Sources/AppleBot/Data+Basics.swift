@@ -16,7 +16,7 @@ let botToken: String = "NDM0MTU5NTU4MzExNTQyNzg0.DcvaGQ._jZ8rmuerkYJPiwsRPKwoTVo
 /// Guilds approved for use with Apple Bot
 let approvedServers: [UInt64] = [406145333916205076, 393972674210168835, 332309672486895637]
 
-/// The all mighty Wookiee (replace to use the creator functions)
+/// The all mighty Wookiee (replace to use the creator commands)
 let creator: UInt64 = 204675713813446656
 
 /// The command indicator, what goes before the commands (!ping)
@@ -44,10 +44,14 @@ var status: String = "with my iPhone X"
 
 /// Assignable roles
 ///
-/// Structured [Guild: [Role Name: Role ID]]
-var assignableRoles = [UInt64: [Role]]()
+/// Structured [Guild: [Role Name: Role ID (Snowflake)]]
+var assignableRoles = [UInt64: [String: UInt64]]()
 
+/// The version of Apple Bot Running
+let version: String = "I'm a test version designed and ran by Wookiee, bite my hairy Wookiee ass!"
 
+/// Commands for only the creator
+let creatorcommands = ["test", "shutdown"]
 
 
 

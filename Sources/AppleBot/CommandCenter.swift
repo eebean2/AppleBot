@@ -1,176 +1,246 @@
 //
-//  Command.swift
+//  CommandCenter.swift
 //  AppleBot
 //
-//  Created by Erik Bean on 5/3/18.
+//  Created by Erik Bean on 5/13/18.
 //
 
-import Sword
 import Foundation
+import Sword
 
 class CommandCenter {
     
-    func commandCheck(_ msg: Message) {
-        
+    func commandCheck(_ command: String, msg: Message) {
         if isSaving {
-            msg.reply(with: "**ERROR:** I cannot do that while saving data, please try again when finished.")
-            return
+            error("Error", error: "I cannot do that while the bot is saving or writing data, please try again when finished", inReplyTo: msg)
         }
         
-        let i: Character = indicator[Parser.getGuildID(msg: msg)]?.first ?? "!".first!
+        // MARK:- Role Manager Commands
+        // MARK: Role Manager
         
-        if msg.content.first == i {
-            
-            // MARK:- Add Role
-            if msg.content.starts(with: "\(i)addRole") {
-                
-            }
-            
-            if msg.content.starts(with: "\(i)rm") {
-                Parser().parse(msg: msg, hasModifier: true) { (p, e) in
-                    if e != nil {
-                        if e == ParserError.missingModifier {
-                            error("Missing Command", error: "Try `rma help` for a list of commands", inReplyTo: msg)
-                        } else {
-                            error("Unknown Parsing Error")
-                        }
+        if command == "rm" {
+            Parser().parse(msg: msg, hasModifier: true) { (p, e) in
+                if e != nil {
+                    if e == ParserError.missingModifier {
+                        error("Missing Command", error: "Try `rm help` for a list of commands", inReplyTo: msg)
                     } else {
-                        RoleManager().rm(msg: msg, parser: p)
+                        error("Unknown Parsing Error")
                     }
-                }
-            }
-            
-            if msg.content.starts(with: "\(i)rma") {
-                Parser().parse(msg: msg, hasModifier: true) { (p, e: ParserError?) in
-                    if e != nil {
-                        if e == ParserError.missingModifier {
-                            error("Missing Command", error: "Try `rma help` for a list of commands", inReplyTo: msg)
-                        } else {
-                            error("Unknown Parsing Error")
-                        }
-                    } else {
-                        RoleManager().rma(msg: msg, parser: p)
-                    }
-                }
-            }
-            
-            // MARK:- Ping
-            
-            if msg.content.starts(with: "\(i)ping") {
-                msg.reply(with: "Pong!")
-            }
-            
-            // MARK:- Test Method
-            
-            if msg.content.starts(with: "\(i)test") {
-                if !Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
-                    unauthorizedReply(msg: msg)
-                    return
-                }
-// TEST METHODS HERE --------------------------------------------
-                Parser().parse(msg: msg, hasModifier: false) { (p, e) in
-                    if e != nil {
-                        error("Parsing Error", error: e!.localizedDescription, inReplyTo: msg)
-                    } else {
-                        let inf = Infraction(id: 1, reason: p.reason, type: .warning, offender: p.against, forceban: nil, accuser: p.accusor!, occuredOn: Date(), expiresOn: nil)
-                        InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
-                        EmbedReply().reply(to: msg, title: "Test Completed", message: nil, color: .testing)
-                    }
-                }
-                
-//                var testResponse = Embed()
-//                testResponse.color = 0x00FFFF
-//                testResponse.title = "Test Completed:"
-////                testResponse.description = """
-////                **Error:** \(err?.localizedDescription ?? "No Error")
-////                """
-//                msg.reply(with: testResponse)
-                
-// END OF TEST METHOD -------------------------------------------
-                
-                var e = Embed()
-                e.title = "Reminder:"
-                e.color = 0x00FFFF
-                e.description = "Don't forget to check Xcode's logs!"
-                msg.reply(with: e)
-            }
-            
-            // MARK:- Shutdown
-            
-            if msg.content.starts(with: "\(i)shutdown") {
-                let check = Parser.creatorCheck(ID: Parser.getUserID(msg: msg))
-                if check {
-                    botShutdown(msg: msg)
                 } else {
-                    EmbedReply().error(on: msg, error: "Sorry, I can not do that for you")
+                    RoleManager().rm(msg: msg, parser: p)
                 }
             }
-            
-            // MARK:- Limit Commands
-            
-            if msg.content.starts(with: "\(i)limitCommand") {
-                Parser().parse(msg: msg, hasModifier: true) { (p, e) in
-                    if e != nil {
-                        let e = e as! ParserError
-                        if e == .missingModifier {
-                            missingArg(msg: msg)
-                        }
+        }
+        
+        // MARK: Manager Add Role
+        
+        if command == "rma" {
+            Parser().parse(msg: msg, hasModifier: true) { (p, e: ParserError?) in
+                if e != nil {
+                    if e == ParserError.missingModifier {
+                        error("Missing Command", error: "Try `rma help` for a list of commands", inReplyTo: msg)
                     } else {
-                        if p.modifier != nil {
-                            print(p.command?.rawValue ?? "Command Error")
-                            print(p.modifier!)
-                            print(msg.mentionedRoles)
-                            if checkPermExist(command: p.command!, guild: Parser.getGuildID(msg: msg)) {
-                                if !msg.mentionedRoles.isEmpty {
-                                    updateCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
-                                } else {
-                                    missingArg(msg: msg)
-                                }
-                            } else {
-                                if !msg.mentionedRoles.isEmpty {
-                                    setCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
-                                } else {
-                                    missingArg(msg: msg)
-                                }
-                            }
-                        } else {
-                            missingArg(msg: msg)
-                        }
+                        error("Unknown Parsing Error")
                     }
+                } else {
+                    RoleManager().rma(msg: msg, parser: p)
                 }
-                // !limit [command] to [role]
+            }
+        }
+        
+        // MARK: Manager Remove Role
+        
+        if command == "rmr" {
+            Parser().parse(msg: msg, hasModifier: true) { (p, e) in
+                if e != nil {
+                    if e == ParserError.missingModifier {
+                        error("Missing Command", error: "Try `rmr help` for a list of commands", inReplyTo: msg)
+                    } else {
+                        error("Unknown Parsing Error")
+                    }
+                } else {
+                    RoleManager().rmr(msg: msg, parser: p)
+                }
+            }
+        }
+        
+        // MARK: Add Self
+        
+        if command == "giverole" || command == "gvr" {
+            Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+                if e != nil {
+                    error("Unknown Parsing Error")
+                } else {
+                    RoleManager().giverole(msg: msg, parser: p)
+                }
+            }
+        }
+        
+        // MARK: Remove Self
+        
+        if command == "removeole" || command == "tkr" {
+            Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+                if e != nil {
+                    error("Unknown Parsing Error")
+                } else {
+                    RoleManager().removerole(msg: msg, parser: p)
+                }
+            }
+        }
+        
+        // MARK:- Ping (needs test added)
+        
+        if command == "ping" {
+            msg.reply(with: ":thonk: Pong!")
+        }
+        
+        // MARK:- Test
+        
+        if command == "test" {
+            
+        }
+        
+        // MARK:- Shutdown
+        
+        if command == "shutdown" {
+            if Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
+                botShutdown(msg: msg)
+            } else {
                 
             }
+        }
+        
+        // MARK:- WhoAmI
+        
+        if command == "whoami" {
+            let message = """
+            **Created By:** eebean2#0001
+            **For:** /r/Apple Discord
+            **Version:** \(version)
+            """
+            EmbedReply().reply(to: msg, title: "I Am Apple Bot", message: message, color: .apple)
             
-            // MARK:- Uptime
-            
-            if msg.content.starts(with: "\(i)uptime") {
-                let perms = commandPerms[Parser.getGuildID(msg: msg)]
-                if Parser.permissionCheck(perms: perms!, command:
-                    "uptime", msg: msg) {
-                    msg.reply(with: "I have been awake for.... \(bot.uptime ?? 0) seconds")
+        }
+        
+        if command == "limitcommand" {
+            Parser().parse(msg: msg, hasModifier: true) { (p, e) in
+                if e != nil {
+                    if e == .missingModifier {
+                        error("This command requires more information!", inReplyTo: msg)
+                    }
                 } else {
-                    unauthorizedReply(msg: msg)
-                }
-            }
-            
-            if msg.content.starts(with: "\(i)setStatus") {
-                if Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
-                    Parser().parse(msg: msg, hasModifier: false) { (p, error) in
-                        if error != nil {
-                            EmbedReply().error(on: msg, error: "Cound not change status: \(error!.localizedDescription)")
-                        } else {
-                            if p.remainder != nil {
-                                bot.editStatus(to: "online", playing: p.remainder!)
-                                EmbedReply().reply(to: msg, title: "Status Updated", message: nil, color: .system)
+                    if p.modifier != nil {
+                        if checkPermExist(command: p.command!, guild: Parser.getGuildID(msg: msg)) {
+                            if !msg.mentionedRoles.isEmpty {
+                                updateCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
                             } else {
-                                EmbedReply().error(on: msg, error: "Cound not change status: No status found")
+                                error("This command requires more information!", inReplyTo: msg)
                             }
+                        } else if !msg.mentionedRoles.isEmpty {
+                            setCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
+                        } else {
+                            error("This command requires more information!", inReplyTo: msg)
                         }
+                    } else {
+                        error("This command requires more information!", inReplyTo: msg)
                     }
                 }
             }
         }
+        
+        // MARK:- Uptime
+        
+        if command == "uptime" {
+            EmbedReply().reply(to: msg, title: "I have been awake for...", message: "\(bot.uptime ?? 0) seconds", color: .system)
+        }
+        
+        // MARK:- Update Status
+        
+        if command == "setstatus" {
+            Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+                if e != nil {
+                    error("Could not chance status", error: e!.localizedDescription, inReplyTo: msg)
+                } else {
+                    if p.remainder != nil {
+                        if p.remainder! == "offline" {
+                            bot.editStatus(to: "offline")
+                        } else {
+                            bot.editStatus(to: "online", playing: p.remainder!)
+                        }
+                        EmbedReply().reply(to: msg, title: "Status Updated", message: nil, color: .system)
+                    } else {
+                        error("Could not chance status", error: "No status found", inReplyTo: msg)
+                    }
+                }
+            }
+        }
+        
+        // MARK:- Approved
+        
+        if command == "approved" {
+            if Parser.serverCheck(ID: Parser.getGuildID(msg: msg)) {
+                EmbedReply().reply(to: msg, title: "You are approved to use Apple Bot!", message: "Command away!", color: .apple)
+            } else {
+                error("iTunes has stopped working...", error: "Just kidding, but really... you are not approved to use me here. Sorry!", inReplyTo: msg)
+            }
+        }
+        
+        if command == "permcheck" {
+            if commandPerms[Parser.getGuildID(msg: msg)] != nil {
+                if msg.member?.guild != nil {
+                    bot.getRoles(from: msg.member!.guild!.id) { (roles, e) in
+                        if e != nil {
+                            error("Permission Check Error", error: e!.message, inReplyTo: msg)
+                        } else {
+                            if roles == nil {
+                                error("Permission Check Error", error: "No roles found", inReplyTo: msg)
+                                return
+                            }
+                            var list = String()
+                            var rlist = String()
+                            for perms in commandPerms[Parser.getGuildID(msg: msg)]! {
+                                for perm in perms {
+                                    list.append("**\(perm.key):** ")
+                                    for id in perm.value {
+                                        for role in roles! {
+                                            if role.id.rawValue == id {
+                                                if rlist != "" {
+                                                    rlist.append(", ")
+                                                }
+                                                rlist.append(role.name)
+                                            }
+                                        }
+                                    }
+                                    list.append(rlist)
+                                    rlist = ""
+                                }
+                            }
+                            EmbedReply().reply(to: msg, title: "Permission List", message: list, color: .system)
+                        }
+                    }
+                }
+            }
+        }
+        
+        // MARK:- Help
+        
+        if command == "help" {
+            if msg.member != nil {
+                bot.getDM(for: msg.member!.user.id) { (dm, e) in
+                    if e != nil {
+                        error("There was an error getting help", error: "Please try again later", inReplyTo: msg)
+                    } else {
+                        if dm == nil {
+                            error("There was an error getting help", error: "Please try again later", inReplyTo: msg)
+                        } else {
+                            help().getHelp(dm: dm!, msg: msg)
+                        }
+                    }
+                }
+            }
+        }
+        
+        // MARK:- New Commands Here
     }
     
     // MARK:- Helper Functions
@@ -216,13 +286,5 @@ class CommandCenter {
             }
         }
         msg.reply(with: "The command \(command.string) has been updated!")
-    }
-    
-    func unauthorizedReply(msg: Message) {
-        msg.reply(with: "I am sorry, you do not have permission to do that.")
-    }
-    
-    func missingArg(msg: Message) {
-        msg.reply(with: "Error: This command requires more information!")
     }
 }

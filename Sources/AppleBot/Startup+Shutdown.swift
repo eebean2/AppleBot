@@ -60,7 +60,7 @@ func botShutdown(msg: Message? = nil) {
     isSaving = false
     message("Thank you for using Apple Bot", inReplyTo: msg)
     bot.disconnect()
-    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
         exit(EXIT_SUCCESS)
     }
 }
