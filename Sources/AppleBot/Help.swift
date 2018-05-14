@@ -34,8 +34,6 @@ class help {
                     h.append("\(rmr)\n")
                     h.append("\(giverole)\n")
                     h.append("\(removerole)\n")
-                    h.append("\(ping)\n")
-                    h.append("\(test)\n")
                     h.append("\(shutdown)\n")
                     h.append("\(whoami)\n")
                     h.append("\(limitcommand)\n")
@@ -57,14 +55,12 @@ class help {
     let rmr: String = "**`rmr`:** *Role Manager Remove, allows you to remove roles from the role manager to stop self adding. This command requires a modifier. You can use `rmr help` for more details.*"
     let giverole: String = "**`giverole` or `gvr`:** *Give Role, allows you to assign yourself a role.*"
     let removerole: String = "**`removerole` or `tkr`:** *Remove Role, allows you to remove a role from yourself.*"
-    let ping: String = "**`ping`:** *Ping, ping the bot.*"
-    let test: String = "**`test`:** *Test, the bot's test method.*"
     let shutdown: String = "**`shutdown`:** *Shutdown, DO IT, END MY BLOODY SUFFERING!*"
     let whoami: String = "**`whoami`:** *Who Am I, find out more about me.*"
     let limitcommand: String = "**`limitcommand`:** *Limit Command, limit commands to specific roles. This command requires a modifier. This will be moved under Role Manager in the future.*"
     let uptime: String = "**`uptime`:** *Uptime, check how long the bot has been alive in seconds.*"
     let setstatus: String = "**`setstatus`:** *Set Status, set the playing game status of the bot.*"
     let approved: String = "**`approved`:** *Approved, check if your server is approved to use Apple Bot.*"
-    let permcheck: String = "**`permcheck`:** *Permission Check, check your current permission limitations*"
+    let permcheck: String = "**`permlist`:** *Permission list, list your current permission limitations*"
     let help: String = "**`help`:** *Help, the command you just asked for...*"
 }

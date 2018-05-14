@@ -8,7 +8,6 @@
 // Super Friends :D = 406145333916205076
 
 import Sword
-import Foundation
 
 /// Bot Token for interacting with the Discord API
 let botToken: String = "NDM0MTU5NTU4MzExNTQyNzg0.DcvaGQ._jZ8rmuerkYJPiwsRPKwoTVo22k"
@@ -40,7 +39,7 @@ var botChannel: [UInt64: UInt64] = [406145333916205076: 441783256699109386]
 var testChannel: UInt64? = 441783256699109386
 
 /// The Apple Bot default status
-var status: String = "with my iPhone X"
+var status: String = "with my WWDC ticket"
 
 /// Assignable roles
 ///
@@ -48,10 +47,10 @@ var status: String = "with my iPhone X"
 var assignableRoles = [UInt64: [String: UInt64]]()
 
 /// The version of Apple Bot Running
-let version: String = "I'm a test version designed and ran by Wookiee, bite my hairy Wookiee ass!"
+let version: String = "I'm Apple Bot, a next generation, all in one solution being built to help the staff, moderators, and admins of the /r/Apple Discord do their job better!"
 
 /// Commands for only the creator
-let creatorcommands = ["test", "shutdown"]
+let creatorcommands = ["shutdown"]
 
 
 

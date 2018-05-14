@@ -5,7 +5,6 @@
 //  Created by Erik Bean on 5/13/18.
 //
 
-import Foundation
 import Sword
 
 class CommandCenter {
@@ -88,25 +87,11 @@ class CommandCenter {
             }
         }
         
-        // MARK:- Ping (needs test added)
-        
-        if command == "ping" {
-            msg.reply(with: ":thonk: Pong!")
-        }
-        
-        // MARK:- Test
-        
-        if command == "test" {
-            
-        }
-        
         // MARK:- Shutdown
         
         if command == "shutdown" {
             if Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
                 botShutdown(msg: msg)
-            } else {
-                
             }
         }
         
@@ -193,7 +178,7 @@ class CommandCenter {
         
         // MARK:- Permission Check
         
-        if command == "permcheck" {
+        if command == "permlist" {
             if commandPerms[Parser.getGuildID(msg: msg)] != nil {
                 if msg.member?.guild != nil {
                     bot.getRoles(from: msg.member!.guild!.id) { (roles, e) in
@@ -215,7 +200,7 @@ class CommandCenter {
                                                 if rlist != "" {
                                                     rlist.append(", ")
                                                 }
-                                                rlist.append(role.name)
+                                                rlist.append("\(role.name)\n")
                                             }
                                         }
                                     }
@@ -289,6 +274,7 @@ class CommandCenter {
                     if p.key == command.string {
                         v.append(contentsOf: p.value)
                         v = Array(Set(v))
+                        commandPerms[guild] = [[command.string: v]]
                     }
                 }
             }
