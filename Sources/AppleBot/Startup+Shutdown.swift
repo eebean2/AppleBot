@@ -15,7 +15,11 @@ func botStartup() {
     message("Apple Bot is Now Starting")
     message("Loading Settings", message: "Commands will not be usable until all settings are loaded")
     isSaving = true
+    #if os(macOS)
     var path = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first!
+    #else
+    var path = Bundle.main.executablePath!
+    #endif
     path.append("/Preferences/com.AppleBot.botprefs.plist")
     let plist = FileManager.default.contents(atPath: path)
     if plist != nil {
@@ -42,7 +46,11 @@ func botShutdown(msg: Message? = nil) {
     message("Saving Preferances", inReplyTo: msg)
     isSaving = true
     let perms = Parser().getPreferances()
+    #if os(macOS)
     var path = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first!
+    #else
+    var path = Bundle.main.executablePath!
+    #endif
     path.append("/Preferences/com.AppleBot.botprefs.plist")
     if FileManager.default.fileExists(atPath: path) {
         let s = NSKeyedArchiver.archiveRootObject(perms, toFile: path)

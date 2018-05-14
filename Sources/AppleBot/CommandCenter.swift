@@ -78,7 +78,7 @@ class CommandCenter {
         
         // MARK: Remove Self
         
-        if command == "removeole" || command == "tkr" {
+        if command == "removerole" || command == "tkr" {
             Parser().parse(msg: msg, hasModifier: false) { (p, e) in
                 if e != nil {
                     error("Unknown Parsing Error")
@@ -122,6 +122,8 @@ class CommandCenter {
             
         }
         
+        // MARK:- Limit Command
+        
         if command == "limitcommand" {
             Parser().parse(msg: msg, hasModifier: true) { (p, e) in
                 if e != nil {
@@ -130,16 +132,20 @@ class CommandCenter {
                     }
                 } else {
                     if p.modifier != nil {
-                        if checkPermExist(command: p.command!, guild: Parser.getGuildID(msg: msg)) {
-                            if !msg.mentionedRoles.isEmpty {
-                                updateCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
+                        if let command = Command(rawValue: p.modifier!) {
+                            if checkPermExist(command: command, guild: Parser.getGuildID(msg: msg)) {
+                                if !msg.mentionedRoles.isEmpty {
+                                    updateCommandPerm(guild: Parser.getGuildID(msg: msg), command: command, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
+                                } else {
+                                    error("This command requires more information!", inReplyTo: msg)
+                                }
+                            } else if !msg.mentionedRoles.isEmpty {
+                                setCommandPerm(guild: Parser.getGuildID(msg: msg), command: command, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
                             } else {
                                 error("This command requires more information!", inReplyTo: msg)
                             }
-                        } else if !msg.mentionedRoles.isEmpty {
-                            setCommandPerm(guild: Parser.getGuildID(msg: msg), command: p.command!, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
                         } else {
-                            error("This command requires more information!", inReplyTo: msg)
+                            error("This command is not supported yet, please alert the developer to have it added!", inReplyTo: msg)
                         }
                     } else {
                         error("This command requires more information!", inReplyTo: msg)
@@ -184,6 +190,8 @@ class CommandCenter {
                 error("iTunes has stopped working...", error: "Just kidding, but really... you are not approved to use me here. Sorry!", inReplyTo: msg)
             }
         }
+        
+        // MARK:- Permission Check
         
         if command == "permcheck" {
             if commandPerms[Parser.getGuildID(msg: msg)] != nil {

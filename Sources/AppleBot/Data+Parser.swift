@@ -176,7 +176,11 @@ class Parser {
     }
     
     static func getCommand(msg: Message) -> String? {
-        if msg.content.components(separatedBy: " ").first?.first == indicator[Parser.getGuildID(msg: msg)]?.first {
+        var i = indicator[Parser.getGuildID(msg: msg)]?.first
+        if i == nil {
+            i = "!".first
+        }
+        if msg.content.components(separatedBy: " ").first?.first == i {
             let command = msg.content.components(separatedBy: " ").first!.dropFirst().lowercased()
             if creatorcommands.contains(command) {
                 if creatorCheck(ID: Parser.getUserID(msg: msg)) {

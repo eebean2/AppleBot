@@ -57,13 +57,33 @@ let creatorcommands = ["test", "shutdown"]
 
 /// Apple Bot command compliance check
 enum Command: String {
+    case rm = "rm"
+    case rma = "rma"
+    case rmr = "rmr"
+    case giverole = "giverole"
+    case gvr = "gvr"
+    case removerole = "removerole"
+    case tkr = "tkr"
+    case pint = "ping"
     case test = "test"
-    case uptime = "uptime"
+    case shutdown = "shutdown"
+    case whoami = "whoami"
     case limitCommand = "limitcommand"
+    case uptime = "uptime"
+    case setstatus = "setstatus"
+    case approved = "approved"
+    case permcheck = "permcheck"
+    case help = "help"
     
     var string: String { return toString() }
     
     private func toString() -> String {
-        return self.rawValue
+        if self == .gvr {
+            return Command.giverole.string
+        } else if self == .tkr {
+            return Command.removerole.string
+        } else {
+            return self.rawValue
+        }
     }
 }
