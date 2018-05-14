@@ -248,6 +248,23 @@ class CommandCenter {
             }
         }
         
+        // MARK:- Set Indicator
+        
+        if command == "setIndicator" {
+            Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+                if e != nil {
+                    error("There was an error changing your indicator, please try again", inReplyTo: msg)
+                } else {
+                    if p.remainder?.first != nil {
+                        indicator[Parser.getGuildID(msg: msg)] = String(p.remainder!.first!)
+                        EmbedReply().reply(to: msg, title: "Your bot indicator has been changed", message: "Apple Bot will now respond to commands that start with \(p.remainder!.first!)", color: .apple)
+                    } else {
+                        error("This command requires more information!", inReplyTo: msg)
+                    }
+                }
+            }
+        }
+        
         // MARK:- New Commands Here
     }
     
