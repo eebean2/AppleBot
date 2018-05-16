@@ -14,16 +14,16 @@ class RoleManager {
     
     func rm(msg: Message, parser: Parser) {
         if parser.modifier!.lowercased() == "display" {
-            var l = String()
-            if let rl = assignableRoles[Parser.getGuildID(msg: msg)] {
-                for r in rl {
-                    l.append("\(r.key)\n")
+            if let roles = assignableRoles[Parser.getGuildID(msg: msg)] {
+                var list = String()
+                for role in roles {
+                    list.append("\(role.key)\n")
                 }
+                if list == "" {
+                    list.append("No roles assignable")
+                }
+                msg.reply(with: list)
             }
-            if l == "" {
-                l.append("No roles assignable")
-            }
-            msg.reply(with: l)
         }
     }
     
@@ -39,18 +39,15 @@ class RoleManager {
                 if e != nil {
                     error("Could not find roles", error: e!.message, inReplyTo: msg)
                 } else {
-                    if roles != nil {
-                        let g = Parser.getGuildID(msg: msg)
-                        assignableRoles[g] = nil
-                        var r = [String: UInt64]()
-                        for role in roles! {
-                            if role.permissions == 104324161 {
-                                if role.name != "@everyone" {
-                                    r[role.name] = role.id.rawValue
-                                }
+                    if let roles = roles {
+                        let guild = Parser.getGuildID(msg: msg)
+                        var newRoles = [String: UInt64]()
+                        for role in roles {
+                            if role.permissions == 104324161 && role.name != "@everyone" {
+                                newRoles[role.name] = role.id.rawValue
                             }
                         }
-                        assignableRoles[g] = r
+                        assignableRoles[guild] = newRoles
                         EmbedReply().reply(to: msg, title: "All available are now ready to be added.", message: "You can use `\(indicator[Parser.getGuildID(msg: msg)] ?? "!")rm display` to view all currently available roles", color: .system)
                     } else {
                         error("No roles found", inReplyTo: msg)
@@ -64,16 +61,14 @@ class RoleManager {
                 if e != nil {
                     error("Could not find roles", error: e!.message, inReplyTo: msg)
                 } else {
-                    if roles != nil {
-                        var l = "*Tip: To remove something from this list, simply change it's permissions to non-default permissions!*\n\n"
-                        for role in roles! {
-                            if role.permissions == 104324161 {
-                                if role.name != "@everyone" {
-                                    l.append("\(role.name)\n")
-                                }
+                    if let roles = roles {
+                        var list = "*Tip: To remove something from this list, simply change it's permissions to non-default permissions!*\n\n"
+                        for role in roles {
+                            if role.permissions == 104324161 && role.name != "@everyone" {
+                                list.append("\(role.name)\n")
                             }
                         }
-                        msg.reply(with: l)
+                        msg.reply(with: list)
                     } else {
                         error("No Roles Found", inReplyTo: msg)
                     }
@@ -84,12 +79,12 @@ class RoleManager {
                 if e != nil {
                     error("Could not find roles", error: e!.message, inReplyTo: msg)
                 } else {
-                    if roles != nil {
+                    if let roles = roles {
                         var nr = parser.modifier!
                         if parser.remainder != nil {
                             nr.append(" \(parser.remainder!)")
                         }
-                        for role in roles! {
+                        for role in roles {
                             if role.name == nr {
                                 var r = assignableRoles[Parser.getGuildID(msg: msg)]!
                                 r[role.name] = role.id.rawValue
@@ -134,10 +129,10 @@ class RoleManager {
             }
             EmbedReply().reply(to: msg, title: "You can remove the following roles", message: list, color: .system)
         } else {
-            if parser.remainder != nil {
-                var role = parser.remainder!.lowercased()
-                if parser.remainder!.first! == "@" {
-                    role = parser.remainder!.dropFirst().lowercased()
+            if let remainder = parser.remainder {
+                var role = remainder.lowercased()
+                if remainder.first! == "@" {
+                    role = remainder.dropFirst().lowercased()
                 }
                 if assignableRoles[Parser.getGuildID(msg: msg)] != nil {
                     assignableRoles[Parser.getGuildID(msg: msg)]![role] = nil

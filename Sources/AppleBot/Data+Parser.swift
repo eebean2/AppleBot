@@ -11,6 +11,7 @@ import Foundation
 enum ParserError: Error {
     case missingCommand
     case missingModifier
+    case emptyString
 }
 
 class Parser {
@@ -27,68 +28,52 @@ class Parser {
     // MARK: -Parse
     
     func parse(msg: Message, hasModifier: Bool, completion: (_ parser: Parser, _ error: ParserError?) -> Void) {
-        accusor = msg.author
         let comp = seporate(msg: msg)
-        if comp.first != nil {
-            command = Command(rawValue: comp.first!.dropFirst().lowercased())
+        guard !comp.isEmpty else {
+            completion(self, ParserError.emptyString)
+            return
+        }
+        if let command = Command(rawValue: comp.first!.dropFirst().lowercased()) {
+            self.command = command
         } else {
-            msg.reply(with: "An unknown error has occurred. Please try again!")
             completion(self, ParserError.missingCommand)
             return
         }
-        if hasModifier {
-            if comp.count > 1 {
-                if comp[1].starts(with: "<") {
-                    completion(self, ParserError.missingModifier)
-                    return
-                } else {
-                    modifier = comp[1]
-                    if comp.count > 2 {
-                        if comp[2].starts(with: "<") {
-                            against = msg.mentions.first
-                        } else if UInt64(comp[2]) != nil {
-                            againstID = UInt64(comp[2])
-                        }
-                    }
+        if hasModifier && comp.count > 1 {
+            if !comp[1].starts(with: "<") {
+                modifier = comp[1]
+                if comp.count > 2 && comp[2].starts(with: "<") {
+                    against = msg.mentions.first
+                } else if comp.count > 2 && UInt64(comp[2]) != nil {
+                    againstID = UInt64(comp[2])
                 }
             } else {
                 completion(self, ParserError.missingModifier)
                 return
             }
-        } else {
-            if comp.count > 1 {
-                if comp[1].starts(with: "<") {
-                    against = msg.mentions.first
-                } else if UInt64(comp[1]) != nil {
-                    againstID = UInt64(comp[1])
-                }
-            }
+        } else if comp.count > 1 && comp[1].starts(with: "<") {
+            against = msg.mentions.first
+        } else if comp.count > 1 && UInt64(comp[1]) != nil {
+            againstID = UInt64(comp[1])
         }
-        if against == nil {
-            if hasModifier {
-                if comp.count > 2 {
-                    remainder = comp.dropFirst(2).joined(separator: " ")
-                    remainderSeporated = comp.dropFirst(2).array
-                }
-            } else {
-                if comp.count > 1 {
-                    remainder = comp.dropFirst().joined(separator: " ")
-                    remainderSeporated = comp.dropFirst().array
-                }
+        if against != nil {
+            if hasModifier && comp.count > 3 {
+                reason = comp.dropFirst(3).joined(separator: " ")
+                remainderSeporated = comp.dropFirst(3).array
+            } else if !hasModifier && comp.count > 1 {
+                reason = comp.dropFirst(2).joined(separator: " ")
+                remainderSeporated = comp.dropFirst(2).array
             }
         } else {
-            if hasModifier {
-                if comp.count > 3 {
-                    reason = comp.dropFirst(3).joined(separator: " ")
-                    remainderSeporated = comp.dropFirst(3).array
-                }
-            } else {
-                if comp.count > 2 {
-                    reason = comp.dropFirst(2).joined(separator: " ")
-                    remainderSeporated = comp.dropFirst(2).array
-                }
+            if hasModifier && comp.count > 2 {
+                remainder = comp.dropFirst(2).joined(separator: " ")
+                remainderSeporated = comp.dropFirst(2).array
+            } else if !hasModifier && comp.count > 1 {
+                remainder = comp.dropFirst().joined(separator: " ")
+                remainderSeporated = comp.dropFirst().array
             }
         }
+        accusor = msg.author
         completion(self, nil)
     }
     
@@ -123,12 +108,12 @@ class Parser {
     
     // MARK: -Static Parsers
     
-    static func serverCheck(ID: UInt64) -> Bool {
-        return approvedServers.contains(ID)
+    static func serverCheck(msg: Message) -> Bool {
+        return approvedServers.contains(Parser.getGuildID(msg: msg))
     }
     
-    static func creatorCheck(ID: UInt64) -> Bool {
-        return creator == ID
+    static func creatorCheck(msg: Message) -> Bool {
+        return creator == Parser.getUserID(msg: msg)
     }
     
     static func getRoles(msg: Message) -> [Role]? {
@@ -183,7 +168,7 @@ class Parser {
         if msg.content.components(separatedBy: " ").first?.first == i {
             let command = msg.content.components(separatedBy: " ").first!.dropFirst().lowercased()
             if creatorcommands.contains(command) {
-                if creatorCheck(ID: Parser.getUserID(msg: msg)) {
+                if creatorCheck(msg: msg) {
                     return command
                 } else {
                     return nil

@@ -75,6 +75,7 @@ enum Command: String {
     case help = "help"
     case setIndicator = "setIndicator"
     case saveprefs = "saveprefs"
+    case tempmute = "tempmute"
     
     var string: String { return toString() }
     

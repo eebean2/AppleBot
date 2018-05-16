@@ -97,7 +97,7 @@ class CommandCenter {
         // MARK:- Shutdown
         
         if command == "shutdown" {
-            if Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
+            if Parser.creatorCheck(msg: msg) {
                 Parser().parse(msg: msg, hasModifier: false) { (p, e) in
                     if e != nil {
                         error("Parser error, attempting non-forced shutdown", inReplyTo: msg)
@@ -193,7 +193,7 @@ class CommandCenter {
         // MARK:- Approved
         
         if command == "approved" {
-            if Parser.serverCheck(ID: Parser.getGuildID(msg: msg)) {
+            if Parser.serverCheck(msg: msg) {
                 EmbedReply().reply(to: msg, title: "You are approved to use Apple Bot!", message: "Command away!", color: .apple)
             } else {
                 error("iTunes has stopped working...", error: "Just kidding, but really... you are not approved to use me here. Sorry!", inReplyTo: msg)
@@ -278,6 +278,21 @@ class CommandCenter {
         
         if command == "saveprefs" {
             forceSave(msg: msg)
+        }
+        
+        // MARK:- Tempmute
+        
+        if command == "tempmute" {
+            Parser().parse(msg: msg, hasModifier: true) { (p, e: ParserError?) in
+                if e == .missingModifier {
+                    error("This command requires more information", inReplyTo: msg)
+                } else if e != nil {
+                    error("An unknown error occured", inReplyTo: msg)
+                } else {
+                    let inf = Infraction(id: 1, reason: p.reason, type: .tempmute, offender: p.against, forceban: nil, accuser: p.accusor!, occuredOn: Date(), expiresOn: Date())
+                    InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
+                }
+            }
         }
         
         // MARK:- New Commands Here

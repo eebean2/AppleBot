@@ -84,6 +84,17 @@ class InfractionManagement {
         print("Offender: \(inf.offender?.username ?? "Missing Offender")")
         print("Accuser: \(inf.accuser.username ?? "Missing Accuser")")
         print("Reason: \(inf.reason ?? "No Reason Specified")")
+        
+        var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
+        path.append("/AppleBot/\(guild).plist")
+        if FileManager.default.fileExists(atPath: path) {
+            if let plist = FileManager.default.contents(atPath: path) {
+                if let dict = NSKeyedUnarchiver.unarchiveObject(with: plist) {
+                    _ = dict as! NSDictionary
+                    
+                }
+            }
+        }
     }
 }
 

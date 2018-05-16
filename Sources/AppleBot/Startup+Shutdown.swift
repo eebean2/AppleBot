@@ -21,17 +21,13 @@ func botStartup() {
     var path = Bundle.main.executablePath!
     #endif
     path.append("/Preferences/com.AppleBot.botprefs.plist")
-    let plist = FileManager.default.contents(atPath: path)
-    if plist != nil {
-        let dict = NSKeyedUnarchiver.unarchiveObject(with: plist!) as? NSDictionary
-        if dict != nil {
-            Parser().parsePreferances(from: dict!)
+    if let plist = FileManager.default.contents(atPath: path) {
+        if let dict = NSKeyedUnarchiver.unarchiveObject(with: plist) {
+            Parser().parsePreferances(from: dict as! NSDictionary)
             message("Settings Loaded")
         } else {
             error("No settings found, using defaults.", error: "These will be saved next time you shutdown. You will have to custimize the bot commands, status, and more. Use !help to access the quick help guide.")
         }
-    } else {
-        error("No settings file found, using defaults.", error: "This file will be created next time you shutdown. You will have to custimize the bot commands, status, and more. Use !help to access the quick help guide.")
     }
     bot.editStatus(to: "online", playing: status)
     InfractionManagement().checkInfractionTables()
