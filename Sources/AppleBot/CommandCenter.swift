@@ -179,6 +179,7 @@ class CommandCenter {
                         if p.remainder! == "offline" {
                             bot.editStatus(to: "offline")
                         } else {
+                            status = p.remainder!
                             bot.editStatus(to: "online", playing: p.remainder!)
                         }
                         EmbedReply().reply(to: msg, title: "Status Updated", message: nil, color: .system)

@@ -51,7 +51,7 @@ var assignableRoles = [UInt64: [String: UInt64]]()
 let version: String = "I'm a test version designed and ran by Wookiee, bite my hairy Wookiee ass!"
 
 /// Commands for only the creator
-let creatorcommands = ["shutdown"]
+let creatorcommands = ["shutdown, setstatus"]
 
 
 
