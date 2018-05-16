@@ -35,7 +35,6 @@ class help {
                     h.append("\(giverole)\n")
                     h.append("\(removerole)\n")
                     h.append("\(ping)\n")
-                    h.append("\(test)\n")
                     h.append("\(shutdown)\n")
                     h.append("\(whoami)\n")
                     h.append("\(limitcommand)\n")
@@ -58,7 +57,6 @@ class help {
     let giverole: String = "**`giverole` or `gvr`:** *Give Role, allows you to assign yourself a role.*"
     let removerole: String = "**`removerole` or `tkr`:** *Remove Role, allows you to remove a role from yourself.*"
     let ping: String = "**`ping`:** *Ping, ping the bot.*"
-    let test: String = "**`test`:** *Test, the bot's test method.*"
     let shutdown: String = "**`shutdown`:** *Shutdown, DO IT, END MY BLOODY SUFFERING!*"
     let whoami: String = "**`whoami`:** *Who Am I, find out more about me.*"
     let limitcommand: String = "**`limitcommand`:** *Limit Command, limit commands to specific roles. This command requires a modifier. This will be moved under Role Manager in the future.*"

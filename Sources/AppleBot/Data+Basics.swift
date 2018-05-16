@@ -40,7 +40,7 @@ var botChannel: [UInt64: UInt64] = [406145333916205076: 441783256699109386]
 var testChannel: UInt64? = 441783256699109386
 
 /// The Apple Bot default status
-var status: String = "with my iPhone X"
+var status: String = "with my WWDC Ticket"
 
 /// Assignable roles
 ///
@@ -51,7 +51,7 @@ var assignableRoles = [UInt64: [String: UInt64]]()
 let version: String = "I'm a test version designed and ran by Wookiee, bite my hairy Wookiee ass!"
 
 /// Commands for only the creator
-let creatorcommands = ["test", "shutdown"]
+let creatorcommands = ["shutdown"]
 
 
 
@@ -65,7 +65,6 @@ enum Command: String {
     case removerole = "removerole"
     case tkr = "tkr"
     case pint = "ping"
-    case test = "test"
     case shutdown = "shutdown"
     case whoami = "whoami"
     case limitCommand = "limitcommand"
@@ -74,6 +73,8 @@ enum Command: String {
     case approved = "approved"
     case permcheck = "permcheck"
     case help = "help"
+    case setIndicator = "setIndicator"
+    case saveprefs = "saveprefs"
     
     var string: String { return toString() }
     

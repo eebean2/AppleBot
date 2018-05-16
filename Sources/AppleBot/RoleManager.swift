@@ -227,4 +227,8 @@ class RoleManager {
             }
         }
     }
+    
+    // MARK:- Role Manager - Reaction Commands
+    
+    
 }

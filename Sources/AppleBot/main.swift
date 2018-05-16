@@ -35,4 +35,12 @@ bot.on(.messageCreate) { data in
     }
 }
 
+bot.on(.reactionAdd) { data in
+    let (channel, userID, messageID, emoji) = data as! (TextChannel, Snowflake, Snowflake, Emoji) // TexhChannel, UserID, MessageID, Emoji
+    print("Channel: \(channel)")
+    print("UserID: \(userID)")
+    print("MessageID: \(messageID)")
+    print("Emoji: \(emoji)")
+}
+
 bot.connect()

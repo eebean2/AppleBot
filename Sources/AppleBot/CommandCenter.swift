@@ -94,17 +94,25 @@ class CommandCenter {
             msg.reply(with: ":thonk: Pong!")
         }
         
-        // MARK:- Test
-        
-        if command == "test" {
-            
-        }
-        
         // MARK:- Shutdown
         
         if command == "shutdown" {
             if Parser.creatorCheck(ID: Parser.getUserID(msg: msg)) {
-                botShutdown(msg: msg)
+                Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+                    if e != nil {
+                        error("Parser error, attempting non-forced shutdown", inReplyTo: msg)
+                        botShutdown(msg: msg)
+                    } else {
+                        if p.remainder == nil {
+                            botShutdown(msg: msg)
+                        } else if p.remainder == "forced" {
+                            botShutdown(msg: msg, forced: true)
+                        } else {
+                            error("Unknown shutdown modifier, attempting non-forced shutdown")
+                            botShutdown(msg: msg)
+                        }
+                    }
+                }
             } else {
                 
             }
@@ -263,6 +271,12 @@ class CommandCenter {
                     }
                 }
             }
+        }
+        
+        // MARK:- Save Preferances
+        
+        if command == "saveprefs" {
+            forceSave(msg: msg)
         }
         
         // MARK:- New Commands Here

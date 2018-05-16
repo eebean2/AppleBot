@@ -41,7 +41,7 @@ func botStartup() {
 
 // MARK:- Shutdown
 
-func botShutdown(msg: Message? = nil) {
+func botShutdown(msg: Message? = nil, forced: Bool = false) {
     message("Starting Shutdown", message: "Please do not force shutdown, attempt commands, or yell at me (I'm trying my hardest here)", inReplyTo: msg)
     message("Saving Preferances", inReplyTo: msg)
     isSaving = true
@@ -53,27 +53,48 @@ func botShutdown(msg: Message? = nil) {
     #endif
     path.append("/Preferences/com.AppleBot.botprefs.plist")
     if FileManager.default.fileExists(atPath: path) {
-        let s = NSKeyedArchiver.archiveRootObject(perms, toFile: path)
-        if !s {
-            error("Unable to save preferances", inReplyTo: msg)
-// Add forced shutdown here
-        } else {
+        if NSKeyedArchiver.archiveRootObject(perms, toFile: path) {
             message("Preferances Successfully Saved", inReplyTo: msg)
+            isSaving = false
+            shutdown(msg: msg)
+        } else {
+            error("Unable to save preferances", inReplyTo: msg)
+            isSaving = false
+            if !forced {
+                error("Aborting Shutdown", error: "To force shutdown, add `forced` after the shurdown command", inReplyTo: msg)
+                return
+            } else {
+                shutdown(msg: msg)
+            }
         }
     } else {
         let d = NSKeyedArchiver.archivedData(withRootObject: perms)
-        FileManager.default.createFile(atPath: path, contents: d, attributes: nil)
-        message("Preferances Successfully Saved", inReplyTo: msg)
+        if FileManager.default.createFile(atPath: path, contents: d, attributes: nil) {
+            message("Preferances Successfully Saved", inReplyTo: msg)
+            isSaving = false
+            shutdown(msg: msg)
+        } else {
+            error("Unable to save preferances", inReplyTo: msg)
+            isSaving = false
+            if !forced {
+                error("Aborting Shutdown", error: "To force shutdown, add `forced` after the shurdown command", inReplyTo: msg)
+                return
+            } else {
+                shutdown(msg: msg)
+            }
+        }
     }
-    isSaving = false
+}
+
+// MARK:- Helper Functions
+
+private func shutdown(msg: Message?) {
     message("Thank you for using Apple Bot", inReplyTo: msg)
     bot.disconnect()
     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
         exit(EXIT_SUCCESS)
     }
 }
-
-// MARK:- Helper Functions
 
 func message(_ title: String, message: String? = nil, inReplyTo msg: Message? = nil) {
     let e = EmbedReply.getEmbed(withTitle: title, message: message, color: .system)
@@ -91,4 +112,47 @@ func error(_ title: String, error: String? = nil, inReplyTo msg: Message? = nil)
     } else if testChannel != nil {
         bot.send(e, to: Snowflake(rawValue: testChannel!))
     }
+}
+
+// MARK:- Force Save
+
+func forceSave(msg: Message) {
+    message("Saving Preferances", message: "Commands have been disabled", inReplyTo: msg)
+    isSaving = true
+    let perms = Parser().getPreferances()
+    #if os(macOS)
+    var path = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first!
+    #else
+    var path = Bundle.main.executablePath!
+    #endif
+    path.append("/Preferences/com.AppleBot.newbotprefs.plist")
+    do {
+        let s = NSKeyedArchiver.archivedData(withRootObject: perms)
+        let n = try PropertyListSerialization.propertyList(from: s, options: .mutableContainersAndLeaves, format: nil) as! NSDictionary
+        if n.write(toFile: path, atomically: true) {
+            message("Preferances Sucessfully Saved", message: "Commands have been re-enabled", inReplyTo: msg)
+        } else {
+            error("Unable to save preferances", error: "Commands have been re-enabled", inReplyTo: msg)
+        }
+    } catch _ {
+        error("Unable to save preferances, error caught", error: "Commands have been re-enabled", inReplyTo: msg)
+    }
+//    if perms.write(toFile: path, atomically: true) {
+//        message("Preferances Sucessfully Saved", message: "Commands have been re-enabled", inReplyTo: msg)
+//    } else {
+//        error("Unable to save preferances", error: "Commands have been re-enabled", inReplyTo: msg)
+//    }
+//    if FileManager.default.fileExists(atPath: path) {
+//        let s = NSKeyedArchiver.archiveRootObject(perms, toFile: path)
+//        if !s {
+//            error("Unable to save preferances", inReplyTo: msg)
+//        } else {
+//            message("Preferances Sucessfully Saved", message: "Commands have been reenabled", inReplyTo: msg)
+//        }
+//    } else {
+//        let d = NSKeyedArchiver.archivedData(withRootObject: perms)
+//        FileManager.default.createFile(atPath: path, contents: d, attributes: nil)
+//        message("Preferances Sucessfully Saved", message: "Commands have been reenabled", inReplyTo: msg)
+//    }
+    isSaving = false
 }
