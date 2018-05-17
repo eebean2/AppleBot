@@ -8,12 +8,17 @@
 import Foundation
 import Sword
 
+var rmRole:String?
+var rmCategory:String?
+var rmEmoji:String?
+var rmStageOption:String?
+
 class RoleManager {
     
     // MARK:- Role Manager
     
     func rm(msg: Message, parser: Parser) {
-        if parser.modifier!.lowercased() == "display" {
+        if parser.modifier! == "display" {
             if let roles = assignableRoles[Parser.getGuildID(msg: msg)] {
                 var list = String()
                 for role in roles {
@@ -24,6 +29,30 @@ class RoleManager {
                 }
                 msg.reply(with: list)
             }
+        } else if parser.modifier! == "setup" {
+            msg.member?.user.getDM(then: { (dm, e) in
+                if e != nil {
+                    error("An error has occured", error: e!.message, inReplyTo: msg)
+                } else {
+                    if let dm = dm {
+                        roleSetup = true
+                        let message = """
+                        Welcome to Apple Bot Role Manager setup!
+                        
+                        To help make setting up and displaying roles simpler, roles are seporated into categories. You can use the default category for all roles, or setup custom categories
+                        
+                        What would you like to do?
+                        
+                        **1:** Use the default category
+                        **2:** Setup a new category
+                        """
+                        dm.send(message)
+                        rmStageOption = "setup"
+                    } else {
+                        error("Dm missing", inReplyTo: msg)
+                    }
+                }
+            })
         }
     }
     
@@ -34,7 +63,7 @@ class RoleManager {
     // MARK:- Role Manager - Add
     
     func rma(msg: Message, parser: Parser) {
-        if parser.modifier!.lowercased() == "all" {
+        if parser.modifier! == "all" {
             bot.getRoles(from: Snowflake(rawValue: Parser.getGuildID(msg: msg))) { (roles, e: RequestError?) in
                 if e != nil {
                     error("Could not find roles", error: e!.message, inReplyTo: msg)
@@ -54,9 +83,9 @@ class RoleManager {
                     }
                 }
             }
-        } else if parser.modifier!.lowercased() == "help" {
+        } else if parser.modifier! == "help" {
             rmaHelp(msg: msg)
-        } else if parser.modifier!.lowercased() == "display" {
+        } else if parser.modifier! == "display" {
             bot.getRoles(from: Snowflake(rawValue: Parser.getGuildID(msg: msg))) { (roles, e: RequestError?) in
                 if e != nil {
                     error("Could not find roles", error: e!.message, inReplyTo: msg)
@@ -114,11 +143,11 @@ class RoleManager {
     // MARK:- Role Manager - Remove
     
     func rmr(msg: Message, parser: Parser) {
-        if parser.modifier!.lowercased() == "all" {
+        if parser.modifier! == "all" {
             assignableRoles[Parser.getGuildID(msg: msg)] = nil
-        } else if parser.modifier!.lowercased() == "help" {
+        } else if parser.modifier! == "help" {
             rmaHelp(msg: msg)
-        } else if parser.modifier!.lowercased() == "display" {
+        } else if parser.modifier! == "display" {
             guard assignableRoles[Parser.getGuildID(msg: msg)] != nil else {
                 error("There are no roles to be removed", inReplyTo: msg)
                 return
@@ -133,8 +162,7 @@ class RoleManager {
                 var role = remainder.lowercased()
                 if remainder.first! == "@" {
                     role = remainder.dropFirst().lowercased()
-                }
-                if assignableRoles[Parser.getGuildID(msg: msg)] != nil {
+                } else if assignableRoles[Parser.getGuildID(msg: msg)] != nil {
                     assignableRoles[Parser.getGuildID(msg: msg)]![role] = nil
                     EmbedReply().reply(to: msg, title: "If the role existed, it has been removed from the assignable role list", message: nil, color: .system)
                 }
@@ -225,5 +253,14 @@ class RoleManager {
     
     // MARK:- Role Manager - Reaction Commands
     
+    func continueSetup(msg: Message) {
+        if rmStageOption == "setup" {
+            if msg.content == "1" {
+                
+            } else if msg.content == "2" {
+                
+            }
+        }
+    }
     
 }

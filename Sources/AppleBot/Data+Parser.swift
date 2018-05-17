@@ -41,7 +41,7 @@ class Parser {
         }
         if hasModifier && comp.count > 1 {
             if !comp[1].starts(with: "<") {
-                modifier = comp[1]
+                modifier = comp[1].lowercased()
                 if comp.count > 2 && comp[2].starts(with: "<") {
                     against = msg.mentions.first
                 } else if comp.count > 2 && UInt64(comp[2]) != nil {

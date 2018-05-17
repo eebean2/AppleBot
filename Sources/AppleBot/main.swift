@@ -30,8 +30,10 @@ bot.on(Event.guildDelete) { data in
 
 bot.on(.messageCreate) { data in
     let msg = data as! Message
-    if Parser.getCommand(msg: msg) != nil {
-        CommandCenter().commandCheck(Parser.getCommand(msg: msg)!, msg: msg)
+    if roleSetup && msg.content.first != indicator[Parser.getGuildID(msg: msg)]?.first {
+        RoleManager().continueSetup(msg: msg)
+    } else if let command = Parser.getCommand(msg: msg) {
+        CommandCenter().commandCheck(command, msg: msg)
     }
 }
 

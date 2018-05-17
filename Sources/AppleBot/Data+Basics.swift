@@ -53,6 +53,9 @@ let version: String = "I'm a test version designed and ran by Wookiee, bite my h
 /// Commands for only the creator
 let creatorcommands = ["shutdown, setstatus"]
 
+/// Role Manager Setup
+var roleSetup = false
+
 
 
 /// Apple Bot command compliance check

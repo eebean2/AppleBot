@@ -141,3 +141,20 @@ struct Infraction {
         expiresOn = data["expires"] as? Date
     }
 }
+
+enum InfractionPermissions {
+    case kick
+    case ban
+    case mute
+    
+    var permission: Permission {
+        switch self {
+        case .kick:
+            return Permission.kickMembers
+        case .ban:
+            return Permission.banMembers
+        case .mute:
+            return Permission.muteMembers
+        }
+    }
+}
