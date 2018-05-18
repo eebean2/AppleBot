@@ -16,7 +16,7 @@ class CommandCenter {
         }
         
         // MARK:- Role Manager Commands
-        // MARK: Role Manager
+        // MARK:- Role Manager
         
         if command == "rm" {
             Parser().parse(msg: msg, hasModifier: true) { (p, e) in
@@ -27,7 +27,7 @@ class CommandCenter {
                         error("Unknown Parsing Error")
                     }
                 } else {
-                    RoleManager().rm(msg: msg, parser: p)
+                    RoleManager.shared.rm(msg: msg, parser: p)
                 }
             }
         }
@@ -43,7 +43,7 @@ class CommandCenter {
                         error("Unknown Parsing Error")
                     }
                 } else {
-                    RoleManager().rma(msg: msg, parser: p)
+                    RoleManager.shared.rma(msg: msg, parser: p)
                 }
             }
         }
@@ -59,7 +59,7 @@ class CommandCenter {
                         error("Unknown Parsing Error")
                     }
                 } else {
-                    RoleManager().rmr(msg: msg, parser: p)
+                    RoleManager.shared.rmr(msg: msg, parser: p)
                 }
             }
         }
@@ -71,7 +71,7 @@ class CommandCenter {
                 if e != nil {
                     error("Unknown Parsing Error")
                 } else {
-                    RoleManager().giverole(msg: msg, parser: p)
+                    RoleManager.shared.giverole(msg: msg, parser: p)
                 }
             }
         }
@@ -83,7 +83,7 @@ class CommandCenter {
                 if e != nil {
                     error("Unknown Parsing Error")
                 } else {
-                    RoleManager().removerole(msg: msg, parser: p)
+                    RoleManager.shared.removerole(msg: msg, parser: p)
                 }
             }
         }
@@ -280,20 +280,29 @@ class CommandCenter {
             forceSave(msg: msg)
         }
         
+        // MARK:- Infraction Commands
         // MARK:- Tempmute
         
         if command == "tempmute" {
-            Parser().parse(msg: msg, hasModifier: true) { (p, e: ParserError?) in
-                if e == .missingModifier {
-                    error("This command requires more information", inReplyTo: msg)
-                } else if e != nil {
-                    error("An unknown error occured", inReplyTo: msg)
-                } else {
-                    let inf = Infraction(id: 1, reason: p.reason, type: .tempmute, offender: p.against, forceban: nil, accuser: p.accusor!, occuredOn: Date(), expiresOn: Date())
+            InfractionManagement().infParser(msg: msg) { (inf, e) in
+                if let e = e {
+                    error("Infraction Parsing Error", error: e.localizedDescription, inReplyTo: msg)
+                } else if let inf = inf {
                     InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
                 }
             }
+            
+//            Parser().parse(msg: msg, hasModifier: false) { (p, e: ParserError?) in
+//                if e != nil {
+//                    error("An unknown error occured", inReplyTo: msg)
+//                } else {
+//                    let inf = Infraction(id: 1, reason: p.reason, type: .tempmute, offender: p.against, forceban: nil, accuser: p.accusor!, occuredOn: Date(), expiresOn: Date())
+//                    InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
+//                }
+//            }
         }
+        
+        // MARK: New Infraction Command Here
         
         // MARK:- New Commands Here
     }

@@ -12,6 +12,23 @@ enum ParserError: Error {
     case missingCommand
     case missingModifier
     case emptyString
+    case missingReason
+    case missingTime
+    
+    var localizedDescription: String {
+        switch self {
+        case .missingCommand:
+            return "Command Missing, recommended not to return an error."
+        case .missingModifier:
+            return "Modifier Missing, more information required."
+        case .emptyString:
+            return "A possible unknown error has occured."
+        case .missingReason:
+            return "A reason is required for this infraction"
+        case .missingTime:
+            return "A time must be specified in the duration of `000s`, `000m`, or `000d`"
+        }
+    }
 }
 
 class Parser {

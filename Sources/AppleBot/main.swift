@@ -31,7 +31,12 @@ bot.on(Event.guildDelete) { data in
 bot.on(.messageCreate) { data in
     let msg = data as! Message
     if roleSetup && msg.content.first != indicator[Parser.getGuildID(msg: msg)]?.first {
-        RoleManager().continueSetup(msg: msg)
+        
+        // Setup has been disabled for the time being
+        // Due to multiple services now using setup
+        // It will be restructured into a full
+        // Service usage tool
+        
     } else if let command = Parser.getCommand(msg: msg) {
         CommandCenter().commandCheck(command, msg: msg)
     }

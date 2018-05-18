@@ -15,6 +15,17 @@ enum InfractionType: String {
     case tempmute = "Temporary Mute"
     case mute = "Mute"
     case warning = "Warning"
+    
+    var string: String { return self.rawValue }
+    
+    static func getType(_ from: Command) -> InfractionType? {
+        switch from {
+        case .tempmute:
+            return InfractionType.tempmute
+        default:
+            return nil
+        }
+    }
 }
 
 class InfractionManagement {
@@ -94,7 +105,61 @@ class InfractionManagement {
                     
                 }
             }
+        } else {
+            print("No File Found at \(path)")
+            print(inf.dictionary())
         }
+    }
+    
+    func infParser(msg: Message, completion: (_ infraction: Infraction?, _ error: Error?) -> Void){
+        Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+            if let e = e {
+                completion(nil, e)
+            } else {
+                print("Infraction: \(InfractionType.getType(p.command!)?.string ?? "No Infraction Type Found")")
+                print("Offender: \(p.against?.username ?? "Offender Username not found")")
+                if !p.remainderSeporated!.isEmpty, let remainderSeporated = p.remainderSeporated {
+                    let time = remainderSeporated.first
+                    if time?.last == "m".first || time?.last == "d".first || time?.last == "s".first {
+                        print("Reason: \(remainderSeporated.dropFirst().joined(separator: " "))")
+                        print("Infraction Time: \(time!)")
+                    } else {
+                        completion(nil, ParserError.missingTime)
+                    }
+                } else {
+                    completion(nil, ParserError.missingReason)
+                }
+                completion(nil,nil)
+            }
+        }
+    }
+    
+    private func mutedExist(msg: Message, completion: @escaping (Bool, RequestError?) -> Void) {
+        msg.member?.guild?.getRoles(then: { (roles, requestError) in
+            if let err = requestError {
+                completion(false, err)
+            } else if let roles = roles {
+                for role in roles {
+                    if role.name == "Muted" {
+                        completion(true, nil)
+                    }
+                }
+            }
+            completion(false, nil)
+        })
+    }
+    
+    private func createMuted(msg: Message) {
+        let muted: [String: Any] = [
+            "name": "Muted",
+            "permissions": 0,
+            "color": 0x808080,
+            "hoist": false,
+            "mentionable": false
+        ]
+//        msg.member?.guild?.createRole(with: muted, then: { (role, error) in
+//            // code here
+//        })
     }
 }
 
@@ -119,7 +184,7 @@ struct Infraction {
         }
     }
     
-    func data() -> [String: Any] {
+    func dictionary() -> [String: Any] {
         var d = [String: Any]()
         d["id"] = id
         d["reason"] = reason
