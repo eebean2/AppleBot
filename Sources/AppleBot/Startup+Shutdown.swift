@@ -94,19 +94,19 @@ private func shutdown(msg: Message?) {
 
 func message(_ title: String, message: String? = nil, inReplyTo msg: Message? = nil) {
     let e = EmbedReply.getEmbed(withTitle: title, message: message, color: .system)
-    if msg != nil {
-        msg!.reply(with: e)
-    } else if testChannel != nil {
-        bot.send(e, to: Snowflake(rawValue: testChannel!))
+    if let msg = msg {
+        msg.reply(with: e)
+    } else {
+        bot.send(e, to: Snowflake(rawValue: testChannel))
     }
 }
 
 func error(_ title: String, error: String? = nil, inReplyTo msg: Message? = nil) {
     let e = EmbedReply.getEmbed(withTitle: title, message: error, color: .alert)
-    if msg != nil {
-        msg!.reply(with: e)
-    } else if testChannel != nil {
-        bot.send(e, to: Snowflake(rawValue: testChannel!))
+    if let msg = msg {
+        msg.reply(with: e)
+    } else {
+        bot.send(e, to: Snowflake(rawValue: testChannel))
     }
 }
 

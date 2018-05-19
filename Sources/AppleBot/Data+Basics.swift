@@ -34,10 +34,16 @@ var isSaving = false
 /// Where the bot channel is located for a guild
 var botChannel: [UInt64: UInt64] = [406145333916205076: 441783256699109386]
 
+/// Giveaway Channel
+var giveChannel: [UInt64: UInt64] = [406145333916205076: 441783256699109386]
+
+/// Giveaway Role
+var giveRole: [UInt64: String] = [406145333916205076: "@everyone"]
+
 /// The test channel
 /// This is where information for startups, failures, and general logging is located
 /// Change this to your general test channel if you wish to see this information
-var testChannel: UInt64? = 441783256699109386
+var testChannel: UInt64 = 441783256699109386
 
 /// The Apple Bot default status
 var status: String = "with my WWDC Ticket"
@@ -54,7 +60,7 @@ let version: String = "I'm a test version designed and ran by Wookiee, bite my h
 let creatorcommands = ["shutdown, setstatus"]
 
 /// Role Manager Setup
-var roleSetup = false
+var roleSetup: SetupState = .noSetup
 
 
 
@@ -79,6 +85,7 @@ enum Command: String {
     case setIndicator = "setIndicator"
     case saveprefs = "saveprefs"
     case tempmute = "tempmute"
+    case giveaway = "giveaway"
     
     var string: String { return toString() }
     
@@ -91,4 +98,11 @@ enum Command: String {
             return self.rawValue
         }
     }
+}
+
+/// Setup State
+enum SetupState {
+    case noSetup
+    case giveawayNeedsItem
+    case giveawayNeedsDate
 }

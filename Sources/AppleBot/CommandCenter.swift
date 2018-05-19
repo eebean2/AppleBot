@@ -304,6 +304,13 @@ class CommandCenter {
         
         // MARK: New Infraction Command Here
         
+        // MARK:- Giveaway Commands
+        
+        if command == "giveaway" {
+            print(msg.content)
+            Giveaway.manager.start()
+        }
+        
         // MARK:- New Commands Here
     }
     

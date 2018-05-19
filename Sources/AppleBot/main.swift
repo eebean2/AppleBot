@@ -30,7 +30,7 @@ bot.on(Event.guildDelete) { data in
 
 bot.on(.messageCreate) { data in
     let msg = data as! Message
-    if roleSetup && msg.content.first != indicator[Parser.getGuildID(msg: msg)]?.first {
+    if roleSetup != .noSetup && msg.content.first != indicator[Parser.getGuildID(msg: msg)]?.first {
         
         // Setup has been disabled for the time being
         // Due to multiple services now using setup
