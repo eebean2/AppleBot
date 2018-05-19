@@ -29,9 +29,36 @@ class Giveaway {
 
             To start off, tell me what you want to giveaway?
             """
+            let e = EmbedReply.getEmbed(withTitle: "Welcome to Apple Bot Giveaway Manager", message: welcome, color: .apple)
             if msg.member != nil {
-                
+                sendDM(msg: msg, embed: e) { success in
+                    if !success {
+                        error("Giveaway setup has been aborted", inReplyTo: msg)
+                    } else {
+                        roleSetup = .giveawayNeedsItem
+                    }
+                }
             }
+        } else if roleSetup == .giveawayNeedsItem {
+            tobegiven = msg.content
+            let message = """
+            \(tobegiven)
+            
+            Next, I need to know how long you want the giveaway to last! In the format of 000d (d = days and h = hours), tell me how long till I can pick a winner!
+            """
+            let e = EmbedReply.getEmbed(withTitle: "You are giving away:", message: message, color: .apple)
+            sendDM(msg: msg, embed: e, completion: { success in
+                if !success {
+                    error("Giveaway setup has been aborted", inReplyTo: msg)
+                    return
+                } else {
+                    roleSetup = .giveawayNeedsDate
+                }
+            })
+        } else if roleSetup == .giveawayNeedsDate {
+            
+            // Set time, display setup message, and tell uerer to use `giveaway start`
+            
         }
     }
     
@@ -55,6 +82,12 @@ class Giveaway {
                 print(err)
             } else if let messages = messages {
                 if messages.last?.content == giveaway {
+                    
+                    // Add emoji to message
+                    
+                } else {
+                    
+                    // Message is not last, error and remove giveaway message
                     
                 }
             }
