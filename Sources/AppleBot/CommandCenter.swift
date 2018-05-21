@@ -307,8 +307,25 @@ class CommandCenter {
         // MARK:- Giveaway Commands
         
         if command == "giveaway" {
-            print(msg.content)
-            Giveaway.manager.start()
+            Parser().parse(msg: msg, hasModifier: true) { (p, e) in
+                if let e = e {
+                    error("Giveaway has come across an error", error: e.localizedDescription, inReplyTo: msg)
+                } else if let modifier = p.modifier {
+                    // MARK: Setup
+                    if modifier == "setup" {
+                        Giveaway.manager.setup(msg: msg)
+                    } else if modifier == "reset" {
+                        // MARK: Reset
+                        Giveaway.manager.reset()
+                        EmbedReply().reply(to: msg, title: "Your giveaway has been reset", message: "You may now start a new giveaway", color: .system)
+                    } else if modifier == "start" {
+                        // MARK: Start
+                        Giveaway.manager.start()
+                    }
+                } else {
+                    error("Error, this command requires additional arguments", inReplyTo: msg)
+                }
+            }
         }
         
         // MARK:- New Commands Here

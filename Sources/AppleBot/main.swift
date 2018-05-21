@@ -30,12 +30,14 @@ bot.on(Event.guildDelete) { data in
 
 bot.on(.messageCreate) { data in
     let msg = data as! Message
-    if roleSetup != .noSetup && msg.content.first != indicator[Parser.getGuildID(msg: msg)]?.first {
+    if roleSetup != .noSetup && msg.channel.type == .dm && Giveaway.manager.setupUser?.id.rawValue == msg.author?.id.rawValue {
         
-        // Setup has been disabled for the time being
-        // Due to multiple services now using setup
-        // It will be restructured into a full
-        // Service usage tool
+        if roleSetup == .giveawayNeedsItem || roleSetup == .giveawayNeedsDate {
+            Giveaway.manager.setup(msg: msg)
+        } else {
+            error("Unknown Setup Found", error: "Setup was at \(roleSetup). Setup defaulting to non-setup state, please check Xcode", inReplyTo: msg)
+            Giveaway.manager.reset()
+        }
         
     } else if let command = Parser.getCommand(msg: msg) {
         CommandCenter().commandCheck(command, msg: msg)

@@ -104,5 +104,6 @@ enum Command: String {
 enum SetupState {
     case noSetup
     case giveawayNeedsItem
+    case giveawayNeedsWinners
     case giveawayNeedsDate
 }
