@@ -21,6 +21,7 @@ class Giveaway {
     private(set) var setupUser: User?
     private var id: UInt64?
     private(set) var numOfWinners: Int = 1
+    private var drawPile = [UInt64]()
     
     private init() {}
     
@@ -59,7 +60,7 @@ class Giveaway {
             }
             tobegiven = msg.content
             let message = """
-            \(tobegiven)
+            `\(tobegiven)`
             
             Next, I need to know how many people we will be giving winning this giveaway!
             """
@@ -79,7 +80,7 @@ class Giveaway {
                 return
             }
             let message = """
-            \(numOfWinners)
+            `\(numOfWinners)`
             
             Next, I need to know how long you want the giveaway to last! In the format of 000d (d = days, h = hours, and s = seconds), tell me how long till I can pick a winner!
             """
@@ -117,24 +118,35 @@ class Giveaway {
         }
     }
     
-    func start() {
+    func start(msg: Message) {
+        if isRunning {
+            error("There is already a giveaway running!", error: "Please let the giveaway finish, or use `giveaway reset` to remove it.")
+            return
+        } else if !isSetup {
+            error("Please setup a giveaway in order to start one!", error: "Use `giveaway setup` to setup the giveaway.")
+            return
+        }
         drawOn = Date().addingTimeInterval(time!)
         let df = DateFormatter()
         df.locale = NSLocale.current
         df.timeStyle = DateFormatter.Style.short
         df.dateStyle = DateFormatter.Style.full
         let convDate = df.string(from: drawOn!)
-        let guild = " \(bot.getGuild(for: Snowflake(rawValue: testChannel))?.name ?? "")"
+        guard let g = giveChannel[Parser.getGuildID(msg: msg)] else {
+            error("Giveaway Channel not found", inReplyTo: msg)
+            return
+        }
+        let guild = " \(bot.getGuild(for: Snowflake(rawValue: g))?.name ?? "")"
         
         let giveaway = """
-        It's that time again! Another\(guild) Giveaway!
+        **It's that time again!** Another\(guild) Giveaway!
 
         Here is what we are giving away this time:
-                `\(tobegiven)`
+                **\(tobegiven)**
         
         You have till \(convDate) to hit that :tickets: reaction below
         """
-        bot.send(giveaway, to: Snowflake(rawValue: testChannel)) { (message, err) in
+        bot.send(giveaway, to: Snowflake(rawValue: g)) { (message, err) in
             if let err = err {
                 error("Apple Bot had an error starting your giveaway, please try again", error: err.message)
             } else if let message = message {
@@ -145,6 +157,9 @@ class Giveaway {
                         error("Apple Bot had an error starting your giveaway, please try again", error: err.message)
                     } else {
                         self.isRunning = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + self.time!, execute: {
+                            self.draw(msg: message)
+                        })
                     }
                 })
             } else {
@@ -160,22 +175,116 @@ class Giveaway {
         tobegiven = "Oh... um... this is awkward.... it's Nothing (someone didn't set this up right)!"
         drawOn = nil
         setupUser = nil
+        drawPile = []
     }
     
-    private func draw() {
-        
+    func addCheck(data: Any) {
+        let (_, userID, messageID, emoji) = data as! (TextChannel, Snowflake, Snowflake, Emoji) // TexhChannel, UserID, MessageID, Emoji
+        if userID.rawValue == 434159558311542784 {
+            return
+        }
+        if messageID.rawValue == id && emoji.name == "🎟" {
+            drawPile.append(userID.rawValue)
+        }
+    }
+    
+    func removeCheck(data: Any) {
+        let (_, userID, messageID, emoji) = data as! (TextChannel, Snowflake, Snowflake, Emoji) // TexhChannel, UserID, MessageID, Emoji
+        if messageID.rawValue == id && emoji.name == "🎟" {
+            if let i = drawPile.index(of: userID.rawValue) {
+                drawPile.remove(at: i)
+            }
+        }
+    }
+    
+    func finish(msg: Message) {
+        if !isRunning && !isSetup {
+            error("No Giveaway Found", error: "Please use `giveaway setup` to start a new giveaway", inReplyTo: msg)
+        }
+        if drawOn! >= Date() {
+            draw(msg: msg)
+        } else {
+            let time = drawOn!.timeIntervalSince(Date())
+            DispatchQueue.main.asyncAfter(deadline: .now() + time) {
+                self.draw(msg: msg)
+            }
+        }
+    }
+    
+    func reroll(msg: Message) {
+        if drawPile.isEmpty {
+            error("The draw pile is empty, sorry!", inReplyTo: msg)
+        } else {
+            let winner = drawPile.remove(at: Int(arc4random_uniform(UInt32(drawPile.count))))
+            self.winners([winner], msg: msg)
+        }
+    }
+    
+    private func draw(msg: Message) {
+        var winners = [UInt64]()
+        repeat {
+            winners.append(drawPile.remove(at: Int(arc4random_uniform(UInt32(drawPile.count)))))
+        } while winners.count < numOfWinners
+        self.winners(winners, msg: msg)
+    }
+    
+    private func winners(_ ids: [UInt64], msg: Message) {
+        var calls = String()
+        for id in ids {
+            calls.append("<@\(id)> ")
+        }
+        var s = String()
+        if ids.count == 1 {
+            s = """
+            **We have a Winner!**
+
+            The winner of **\(tobegiven)** is \(calls)
+            """
+        } else {
+            s = """
+            **We have Winners!**
+            
+            The winners of **\(tobegiven)** are \(calls)
+            """
+        }
+        msg.reply(with: s)
     }
     
     func saveGiveaway() -> NSDictionary {
+        if roleSetup != .noSetup {
+            error("Giveaway was in process of being setup, resetting giveaway.")
+            reset()
+        }
         var dict = [String: Any]()
-        
-        
-        
+        dict["setup"] = isSetup
+        dict["running"] = isRunning
+        dict["giving"] = tobegiven
+        dict["draw"] = drawOn
+        dict["time"] = time
+        dict["id"] = id
+        dict["winners"] = numOfWinners
         return dict as NSDictionary
     }
     
     func giveaway(from dict: NSDictionary) {
-        
+        isSetup = dict["setup"] as! Bool
+        isRunning = dict["running"] as! Bool
+        tobegiven = dict["giving"] as! String
+        if let draw = dict["draw"] as? Date {
+            drawOn = draw
+            if draw >= Date() && isRunning {
+                error("There is a giveaway needing awarding, please use `giveaway finish`")
+            } else if isRunning {
+                error("Please restart the giveaway with the command `giveaway finish`")
+            }
+        }
+        if let t = dict["time"] as? TimeInterval {
+            time = t
+        }
+        if let i = dict["id"] as? UInt64 {
+            id = i
+        }
+        numOfWinners = dict["winners"] as! Int
     }
 }
 

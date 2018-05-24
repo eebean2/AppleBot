@@ -82,7 +82,7 @@ enum Command: String {
     case approved = "approved"
     case permcheck = "permcheck"
     case help = "help"
-    case setIndicator = "setIndicator"
+    case setIndicator = "setindicator"
     case saveprefs = "saveprefs"
     case tempmute = "tempmute"
     case giveaway = "giveaway"

@@ -259,17 +259,15 @@ class CommandCenter {
         
         // MARK:- Set Indicator
         
-        if command == "setIndicator" {
-            Parser().parse(msg: msg, hasModifier: false) { (p, e) in
-                if e != nil {
-                    error("There was an error changing your indicator, please try again", inReplyTo: msg)
+        if command == "setindicator" {
+            Parser().parse(msg: msg, hasModifier: false) { (p, err) in
+                if let err = err {
+                    error("There was an error changing your indicator, please try again", error: err.localizedDescription, inReplyTo: msg)
+                } else if let i = p.remainder?.first {
+                    indicator[Parser.getUserID(msg: msg)] = String(i)
+                    EmbedReply().reply(to: msg, title: "Your bot indicator has been changed", message: "Apple Bot will now respond to commands that start with \(p.remainder!.first!)", color: .apple)
                 } else {
-                    if p.remainder?.first != nil {
-                        indicator[Parser.getGuildID(msg: msg)] = String(p.remainder!.first!)
-                        EmbedReply().reply(to: msg, title: "Your bot indicator has been changed", message: "Apple Bot will now respond to commands that start with \(p.remainder!.first!)", color: .apple)
-                    } else {
-                        error("This command requires more information!", inReplyTo: msg)
-                    }
+                    error("This command requires more information!", inReplyTo: msg)
                 }
             }
         }
@@ -320,7 +318,15 @@ class CommandCenter {
                         EmbedReply().reply(to: msg, title: "Your giveaway has been reset", message: "You may now start a new giveaway", color: .system)
                     } else if modifier == "start" {
                         // MARK: Start
-                        Giveaway.manager.start()
+                        Giveaway.manager.start(msg: msg)
+                    } else if modifier == "reroll" {
+                        // MARK: Reroll
+                        Giveaway.manager.reroll(msg: msg)
+                    } else if modifier == "finish" {
+                        // MARK: Finish
+                        Giveaway.manager.finish(msg: msg)
+                    } else {
+                        error("Giveaway manager doesn't know how to do this!", inReplyTo: msg)
                     }
                 } else {
                     error("Error, this command requires additional arguments", inReplyTo: msg)

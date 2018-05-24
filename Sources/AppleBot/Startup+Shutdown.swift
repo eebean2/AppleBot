@@ -110,6 +110,11 @@ func error(_ title: String, error: String? = nil, inReplyTo msg: Message? = nil)
     }
 }
 
+func diag(_ msg: String) {
+    let e = EmbedReply.getEmbed(withTitle: "Diagnostic Message", message: msg, color: .testing)
+    bot.send(e, to: Snowflake(rawValue: testChannel))
+}
+
 // MARK:- Force Save
 
 func forceSave(msg: Message) {

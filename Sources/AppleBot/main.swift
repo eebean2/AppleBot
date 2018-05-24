@@ -32,7 +32,7 @@ bot.on(.messageCreate) { data in
     let msg = data as! Message
     if roleSetup != .noSetup && msg.channel.type == .dm && Giveaway.manager.setupUser?.id.rawValue == msg.author?.id.rawValue {
         
-        if roleSetup == .giveawayNeedsItem || roleSetup == .giveawayNeedsDate {
+        if roleSetup == .giveawayNeedsItem || roleSetup == .giveawayNeedsDate || roleSetup == .giveawayNeedsWinners {
             Giveaway.manager.setup(msg: msg)
         } else {
             error("Unknown Setup Found", error: "Setup was at \(roleSetup). Setup defaulting to non-setup state, please check Xcode", inReplyTo: msg)
@@ -45,11 +45,17 @@ bot.on(.messageCreate) { data in
 }
 
 bot.on(.reactionAdd) { data in
-    let (channel, userID, messageID, emoji) = data as! (TextChannel, Snowflake, Snowflake, Emoji) // TexhChannel, UserID, MessageID, Emoji
-    print("Channel: \(channel)")
-    print("UserID: \(userID)")
-    print("MessageID: \(messageID)")
-    print("Emoji: \(emoji)")
+    Giveaway.manager.addCheck(data: data)
+    
+//    let (channel, userID, messageID, emoji) = data as! (TextChannel, Snowflake, Snowflake, Emoji) // TextChannel, UserID, MessageID, Emoji
+//    print("Channel: \(channel)")
+//    print("UserID: \(userID)")
+//    print("MessageID: \(messageID)")
+//    print("Emoji: \(emoji)")
+}
+
+bot.on(.reactionRemove) { data in
+    Giveaway.manager.removeCheck(data: data)
 }
 
 bot.connect()

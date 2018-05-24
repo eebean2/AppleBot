@@ -109,6 +109,7 @@ class Parser {
         pref["botchannel"] = botChannel
         pref["status"] = status
         pref["roles"] = assignableRoles
+        pref["giveaway"] = Giveaway.manager.saveGiveaway()
         return pref as NSDictionary
     }
     
@@ -120,6 +121,9 @@ class Parser {
         let r = dict["roles"] as? [UInt64: [String: UInt64]]
         if r != nil {
             assignableRoles = r!
+        }
+        if let giveaway = dict["giveaway"] as? NSDictionary {
+            Giveaway.manager.giveaway(from: giveaway)
         }
     }
     
