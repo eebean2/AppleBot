@@ -279,7 +279,7 @@ class CommandCenter {
         }
         
         // MARK:- Infraction Commands
-        // MARK:- Tempmute
+        // MARK: Tempmute
         
         if command == "tempmute" {
             InfractionManagement().infParser(msg: msg) { (inf, e) in
