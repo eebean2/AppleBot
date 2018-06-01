@@ -18,6 +18,11 @@ DerivedData/
 xcuserdata/
 
 ## Other
+.DS_Store
+.DS_Store?
+.Trashes
+.Spotlight-V100
+*.swp
 *.moved-aside
 *.xccheckout
 *.xcscmblueprint
@@ -37,6 +42,11 @@ Packages/
 Package.pins
 Package.resolved
 .build/
+*.xcodeproj
+
+# Carthage
+Carthage/Checkouts
+Carthage/Build
 
 # fastlane
 
