@@ -188,6 +188,7 @@ class Parser {
         }
         if msg.content.components(separatedBy: " ").first?.first == i {
             let command = msg.content.components(separatedBy: " ").first!.dropFirst().lowercased()
+            print(command)
             if creatorcommands.contains(command) {
                 if creatorCheck(msg: msg) {
                     return command
@@ -202,7 +203,7 @@ class Parser {
                         return nil
                     }
                 } else {
-                    return nil
+                    return command
                 }
             }
         } else {

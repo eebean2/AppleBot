@@ -14,7 +14,7 @@ import Foundation
 let botToken: String = "NDM0MTU5NTU4MzExNTQyNzg0.DcvaGQ._jZ8rmuerkYJPiwsRPKwoTVo22k"
 
 /// Guilds approved for use with Apple Bot
-let approvedServers: [UInt64] = [406145333916205076, 393972674210168835, 332309672486895637]
+let approvedServers: [UInt64] = [406145333916205076, 450744862883577858]
 
 /// The all mighty Wookiee (replace to use the creator commands)
 let creator: UInt64 = 204675713813446656

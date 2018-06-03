@@ -30,7 +30,36 @@ enum InfractionType: String {
 
 class InfractionManagement {
     func new(_ infraction: Infraction, onGuild guild: UInt64) {
-        saveInfractionTable(inf: infraction, guild: guild)
+        let gs = Snowflake(rawValue: guild)
+        switch infraction.type {
+        case .ban:
+            var id: Snowflake!
+            if infraction.offender != nil {
+                id = infraction.offender!.id
+            } else {
+                id = Snowflake(rawValue: infraction.forceban!)
+            }
+            bot.ban(id, from: gs, for: infraction.reason, with: [:]) { (err) in
+                if let err = err {
+                    error("Error banning \(infraction.offender?.username ?? String(id.rawValue))", error: err.message, inReplyTo: infraction.msg)
+                } else {
+                    error("NOTICE: Offence Tracking is not setup. This infraction will not be logged.")
+                }
+            }
+        case .kick:
+            bot.kick(infraction.offender!.id, from: gs, for: infraction.reason) { (err) in
+                if let err = err {
+                    error("Error kicking \(infraction.offender!.username ?? String(infraction.offender!.id.rawValue))", error: err.message, inReplyTo: infraction.msg)
+                } else {
+                    error("NOTICE: Offence Tracking is not setup. This infraction will not be logged.")
+                }
+            }
+        default: break
+        }
+        
+        
+        
+//        saveInfractionTable(inf: infraction, guild: guild)
     }
     
     func summary(_ user: UInt64, onGuild guild: UInt64, withMsg msg: Message) {
@@ -172,6 +201,7 @@ struct Infraction {
     var accuser: User
     var occuredOn: Date
     var expiresOn: Date?
+    var msg: Message?
     var active: Bool {
         if expiresOn != nil {
             if Date() >= expiresOn! {
