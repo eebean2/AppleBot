@@ -14,6 +14,7 @@ func botStartup() {
     bot.editStatus(to: "online")
     message("Apple Bot is Now Starting")
     message("Loading Settings", message: "Commands will not be usable until all settings are loaded")
+    ABLogger.log(action: "~~ Startup Started ~~")
     isSaving = true
     #if os(macOS)
     var path = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first!
@@ -33,6 +34,7 @@ func botStartup() {
     InfractionManagement().checkInfractionTables()
     isSaving = false
     message("Apple Bot is ready to use!")
+    ABLogger.log(action: "~~ Startup Finished ~~")
 }
 
 // MARK:- Shutdown
@@ -40,6 +42,7 @@ func botStartup() {
 func botShutdown(msg: Message? = nil, forced: Bool = false) {
     message("Starting Shutdown", message: "Please do not force shutdown, attempt commands, or yell at me (I'm trying my hardest here)", inReplyTo: msg)
     message("Saving Preferances", inReplyTo: msg)
+    ABLogger.log(action: "~~ Shutdown Initiated ~~")
     isSaving = true
     let perms = Parser().getPreferances()
     #if os(macOS)
@@ -87,6 +90,7 @@ func botShutdown(msg: Message? = nil, forced: Bool = false) {
 private func shutdown(msg: Message?) {
     message("Thank you for using Apple Bot", inReplyTo: msg)
     bot.disconnect()
+    ABLogger.log(action: "~~ Shutdown Completed ~~")
     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
         exit(EXIT_SUCCESS)
     }
@@ -102,6 +106,11 @@ func message(_ title: String, message: String? = nil, inReplyTo msg: Message? = 
 }
 
 func error(_ title: String, error: String? = nil, inReplyTo msg: Message? = nil) {
+    var logString = "ERROR: \(title)"
+    if error != nil {
+        logString.append(" | \(error!)")
+    }
+    ABLogger.log(action: logString)
     let e = EmbedReply.getEmbed(withTitle: title, message: error, color: .alert)
     if let msg = msg {
         msg.reply(with: e)
@@ -111,6 +120,7 @@ func error(_ title: String, error: String? = nil, inReplyTo msg: Message? = nil)
 }
 
 func diag(_ msg: String) {
+    ABLogger.log(action: "DIAGNOSTIC MESSAGE: \(msg)")
     let e = EmbedReply.getEmbed(withTitle: "Diagnostic Message", message: msg, color: .testing)
     bot.send(e, to: Snowflake(rawValue: testChannel))
 }
@@ -119,6 +129,7 @@ func diag(_ msg: String) {
 
 func forceSave(msg: Message) {
     message("Saving Preferances", inReplyTo: msg)
+    ABLogger.log(action: "~~ Force Saving ~~")
     isSaving = true
     let perms = Parser().getPreferances()
     #if os(macOS)
@@ -130,6 +141,7 @@ func forceSave(msg: Message) {
     if FileManager.default.fileExists(atPath: path) {
         if NSKeyedArchiver.archiveRootObject(perms, toFile: path) {
             message("Preferances Successfully Saved", inReplyTo: msg)
+            ABLogger.log(action: "~~ Force Save Successful ~~")
         } else {
             error("Unable to save preferances", inReplyTo: msg)
         }
@@ -137,6 +149,7 @@ func forceSave(msg: Message) {
         let d = NSKeyedArchiver.archivedData(withRootObject: perms)
         if FileManager.default.createFile(atPath: path, contents: d, attributes: nil) {
             message("Preferances Successfully Saved", inReplyTo: msg)
+            ABLogger.log(action: "~~ Force Save Successful ~~")
         } else {
             error("Unable to save preferances", inReplyTo: msg)
         }

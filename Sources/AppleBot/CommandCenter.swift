@@ -11,6 +11,21 @@ import Sword
 class CommandCenter {
     
     func commandCheck(_ command: String, msg: Message) {
+        
+        bot.getGuild(Snowflake(rawValue: Parser.getGuildID(msg: msg))) { (guild, err) in
+            if err == nil && guild != nil {
+                ABLogger.log(username: msg.author!.username ?? String(msg.author!.id.rawValue), guild: guild!.name, command: command)
+            } else {
+                if Parser.getGuildID(msg: msg) == 000000000000000000 {
+                    ABLogger.log(username: msg.author!.username ?? String(msg.author!.id.rawValue), guild: "Private DM", command: command)
+                } else {
+                    ABLogger.log(username: msg.author!.username ?? String(msg.author!.id.rawValue), guild: String(Parser.getGuildID(msg: msg)), command: command)
+                }
+            }
+        }
+        
+        
+        
         if isSaving {
             error("Error", error: "I cannot do that while the bot is saving or writing data, please try again when finished", inReplyTo: msg)
         }
@@ -92,11 +107,14 @@ class CommandCenter {
         
         if command == "ping" {
             msg.reply(with: ":thonk: Pong!")
+//            ABLogger.log(action: "NOTICE: Using Ping as test command, current test | ABLogger.logger.cleanupLogs() | Please view the remainder of logs till the next startup with caution")
+//            ABLogger.logger.cleanupLogs()
         }
         
         // MARK:- Shutdown
         
         if command == "shutdown" {
+            ABLogger.log(action: "!!!! Shutdown was attempted !!!!")
             if Parser.creatorCheck(msg: msg) {
                 Parser().parse(msg: msg, hasModifier: false) { (p, e) in
                     if e != nil {
@@ -113,8 +131,6 @@ class CommandCenter {
                         }
                     }
                 }
-            } else {
-                
             }
         }
         
@@ -127,7 +143,6 @@ class CommandCenter {
             **Version:** \(version)
             """
             EmbedReply().reply(to: msg, title: "I Am Apple Bot", message: message, color: .apple)
-            
         }
         
         // MARK:- Limit Command
@@ -144,11 +159,13 @@ class CommandCenter {
                             if checkPermExist(command: command, guild: Parser.getGuildID(msg: msg)) {
                                 if !msg.mentionedRoles.isEmpty {
                                     updateCommandPerm(guild: Parser.getGuildID(msg: msg), command: command, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
+                                    ABLogger.log(action: "Command \(command.string) restrictions updated")
                                 } else {
                                     error("This command requires more information!", inReplyTo: msg)
                                 }
                             } else if !msg.mentionedRoles.isEmpty {
                                 setCommandPerm(guild: Parser.getGuildID(msg: msg), command: command, role: [msg.mentionedRoles.first!.rawValue], msg: msg)
+                                ABLogger.log(action: "Command \(command.string) restrictions set")
                             } else {
                                 error("This command requires more information!", inReplyTo: msg)
                             }
@@ -166,6 +183,7 @@ class CommandCenter {
         
         if command == "uptime" {
             EmbedReply().reply(to: msg, title: "I have been awake for...", message: "\(bot.uptime ?? 0) seconds", color: .system)
+            ABLogger.log(action: "AppleBot Uptime: \(String(describing: bot.uptime))")
         }
         
         // MARK:- Update Status
@@ -178,9 +196,11 @@ class CommandCenter {
                     if p.remainder != nil {
                         if p.remainder! == "offline" {
                             bot.editStatus(to: "offline")
+                            ABLogger.log(action: "Status set to offline")
                         } else {
                             status = p.remainder!
                             bot.editStatus(to: "online", playing: p.remainder!)
+                            ABLogger.log(action: "Status set to \(p.remainder!)")
                         }
                         EmbedReply().reply(to: msg, title: "Status Updated", message: nil, color: .system)
                     } else {
@@ -197,6 +217,7 @@ class CommandCenter {
                 EmbedReply().reply(to: msg, title: "You are approved to use Apple Bot!", message: "Command away!", color: .apple)
             } else {
                 error("iTunes has stopped working...", error: "Just kidding, but really... you are not approved to use me here. Sorry!", inReplyTo: msg)
+                ABLogger.log(action: "!!!! WARNING !!!! Guild \(Parser.getGuildID(msg: msg)) attempted to use AppleBot without validation")
             }
         }
         
@@ -251,6 +272,7 @@ class CommandCenter {
                             error("There was an error getting help", error: "Please try again later", inReplyTo: msg)
                         } else {
                             help().getHelp(dm: dm!, msg: msg)
+                            ABLogger.log(action: "Help list sent to \(msg.author!.username ?? String(msg.author!.id.rawValue))")
                         }
                     }
                 }
@@ -266,6 +288,7 @@ class CommandCenter {
                 } else if let i = p.remainder?.first {
                     indicator[Parser.getUserID(msg: msg)] = String(i)
                     EmbedReply().reply(to: msg, title: "Your bot indicator has been changed", message: "Apple Bot will now respond to commands that start with \(p.remainder!.first!)", color: .apple)
+                    ABLogger.log(action: "Indicator for guild \(Parser.getGuildID(msg: msg)) changed to \(p.remainder!.first!))")
                 } else {
                     error("This command requires more information!", inReplyTo: msg)
                 }
