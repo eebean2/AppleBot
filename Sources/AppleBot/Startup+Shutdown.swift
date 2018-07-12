@@ -30,6 +30,7 @@ func botStartup() {
             error("No settings found, using defaults.", error: "These will be saved next time you shutdown. You will have to custimize the bot commands, status, and more. Use !help to access the quick help guide.")
         }
     }
+    ABLogger.logger.cleanupLogs()
     bot.editStatus(to: "online", playing: status)
     InfractionManagement().checkInfractionTables()
     isSaving = false

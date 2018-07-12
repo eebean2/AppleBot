@@ -55,6 +55,16 @@ class ABLogger {
         }
     }
     
+    func setupCleanupTimer() {
+        var datecomp = DateComponents()
+        datecomp.day = 1
+        if let date = Calendar.current.date(byAdding: datecomp, to: Date()) {
+            _ = ABTimer(fire: date, interval: 86400, repeats: true) { _ in
+                // Code Here
+            }
+        }
+    }
+    
     private func logToFile(_ string: String) {
         let string = "\(Date())| \(string)"
         #if os(macOS)

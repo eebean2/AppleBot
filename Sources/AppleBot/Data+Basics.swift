@@ -11,7 +11,7 @@ import Sword
 import Foundation
 
 /// Bot Token for interacting with the Discord API
-let botToken: String = "NDM0MTU5NTU4MzExNTQyNzg0.DcvaGQ._jZ8rmuerkYJPiwsRPKwoTVo22k"
+private let _botToken: [UInt8] = [78, 68, 77, 48, 77, 84, 85, 53, 78, 84, 85, 52, 77, 122, 69, 120, 78, 84, 81, 121, 78, 122, 103, 48, 46, 68, 105, 104, 73, 106, 103, 46, 119, 87, 79, 117, 112, 112, 49, 80, 83, 115, 85, 79, 80, 55, 111, 52, 57, 67, 97, 85, 54, 78, 114, 68, 65, 122, 56]
 
 /// Guilds approved for use with Apple Bot
 let approvedServers: [UInt64] = [406145333916205076, 450744862883577858]
@@ -30,6 +30,9 @@ var commandPerms: [UInt64: [[String: [UInt64]]]] = [406145333916205076:[[Command
 
 /// Detect if the bot is saving or retriving information from disc
 var isSaving = false
+
+/// Bot Token for interacting with the Discord API
+var botToken: String { return String(bytes: _botToken, encoding: .utf8) ?? "" }
 
 /// Where the bot channel is located for a guild
 var botChannel: [UInt64: UInt64] = [406145333916205076: 441783256699109386]
