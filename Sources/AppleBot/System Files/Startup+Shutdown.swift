@@ -10,10 +10,12 @@ import Sword
 
 // MARK:- Startup
 
+var t: ABTimer!
+
 func botStartup() {
     bot.editStatus(to: "online")
-    message("Apple Bot is Now Starting")
-    message("Loading Settings", message: "Commands will not be usable until all settings are loaded")
+    message("Apple Bot is Now Starting", message: "Commands will not be usable until Apple Bot is fully loaded")
+    message("NOTICE: Startup messages have been moved to the log. This message will be removed at a future time.")
     ABLogger.log(action: "~~ Startup Started ~~")
     isSaving = true
     #if os(macOS)
@@ -22,16 +24,24 @@ func botStartup() {
     var path = Bundle.main.executablePath!
     #endif
     path.append("/Preferences/com.AppleBot.botprefs.plist")
+    ABLogger.log(action: "Loading settings from \(path)")
     if let plist = FileManager.default.contents(atPath: path) {
         if let dict = NSKeyedUnarchiver.unarchiveObject(with: plist) {
             Parser().parsePreferances(from: dict as! NSDictionary)
-            message("Settings Loaded")
+            ABLogger.log(action: "Settings loaded")
         } else {
+            ABLogger.log(action: "No settings found, using defaults. These will be saved next time you shutdown. You will have to custimize the bot commands, status, and more. Use !help to access the quick help guide.")
             error("No settings found, using defaults.", error: "These will be saved next time you shutdown. You will have to custimize the bot commands, status, and more. Use !help to access the quick help guide.")
         }
     }
-    ABLogger.logger.cleanupLogs()
+    ABLogger.log(action: "Setting up GCD Timer (ABTimer) to clean up logs")
+    t = ABTimer(timeInterval: 86400, repeats: true) { timer in
+        ABLogger.log(action: "Timer setup, cleaning up logs, will repeat every 24 hours at this time.")
+        ABLogger.logger.cleanupLogs()
+    }
+    ABLogger.log(action: "Setting bot status to online, status is \"\(status)\"")
     bot.editStatus(to: "online", playing: status)
+    ABLogger.log(action: "Loading infraction tables")
     InfractionManagement().checkInfractionTables()
     isSaving = false
     message("Apple Bot is ready to use!")

@@ -11,6 +11,7 @@ class ABLogger {
     
     private init() { }
     static let logger = ABLogger()
+    private var timer: ABTimer!
     
     static func log(username: String, guild: String, command: String) {
         ABLogger.logger.logToFile("User: \(username) | Guild: \(guild) | Command: \(command.string)")
@@ -56,12 +57,8 @@ class ABLogger {
     }
     
     func setupCleanupTimer() {
-        var datecomp = DateComponents()
-        datecomp.day = 1
-        if let date = Calendar.current.date(byAdding: datecomp, to: Date()) {
-            _ = ABTimer(fire: date, interval: 86400, repeats: true) { _ in
-                // Code Here
-            }
+        timer = ABTimer(timeInterval: 86400, repeats: true) { _ in
+            self.cleanupLogs()
         }
     }
     

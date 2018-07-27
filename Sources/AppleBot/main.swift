@@ -30,6 +30,12 @@ bot.on(Event.guildDelete) { data in
 
 bot.on(.messageCreate) { data in
     let msg = data as! Message
+    if ABCensor.wordCheck(phrase: msg.content) {
+        msg.delete()
+        EmbedReply().error(on: msg, error: "Oh no! We had to delete that! Your message contained an invalid character or phrase!")
+        error("`\(msg.content)` removed for illegal character or phrase.")
+        return
+    }
     if roleSetup != .noSetup && msg.channel.type == .dm && Giveaway.manager.setupUser?.id.rawValue == msg.author?.id.rawValue {
         
         if roleSetup == .giveawayNeedsItem || roleSetup == .giveawayNeedsDate || roleSetup == .giveawayNeedsWinners {

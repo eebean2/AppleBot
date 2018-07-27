@@ -10,9 +10,6 @@
 import Sword
 import Foundation
 
-/// Bot Token for interacting with the Discord API
-private let _botToken: [UInt8] = [78, 68, 77, 48, 77, 84, 85, 53, 78, 84, 85, 52, 77, 122, 69, 120, 78, 84, 81, 121, 78, 122, 103, 48, 46, 68, 105, 104, 73, 106, 103, 46, 119, 87, 79, 117, 112, 112, 49, 80, 83, 115, 85, 79, 80, 55, 111, 52, 57, 67, 97, 85, 54, 78, 114, 68, 65, 122, 56]
-
 /// Guilds approved for use with Apple Bot
 let approvedServers: [UInt64] = [406145333916205076, 450744862883577858]
 
@@ -20,7 +17,7 @@ let approvedServers: [UInt64] = [406145333916205076, 450744862883577858]
 let creator: UInt64 = 204675713813446656
 
 /// The command indicator, what goes before the commands (!ping)
-var indicator: [UInt64: String] = [406145333916205076: "*"]
+var indicator: [UInt64: String] = [:]
 
 /// Limit commands to specific roles, such as !ping to only mods and admins
 /// This is structured as [Guild: [[Command: [Role]]]]
@@ -32,7 +29,7 @@ var commandPerms: [UInt64: [[String: [UInt64]]]] = [406145333916205076:[[Command
 var isSaving = false
 
 /// Bot Token for interacting with the Discord API
-var botToken: String { return String(bytes: _botToken, encoding: .utf8) ?? "" }
+var botToken: String =
 
 /// Where the bot channel is located for a guild
 var botChannel: [UInt64: UInt64] = [406145333916205076: 441783256699109386]
@@ -49,7 +46,7 @@ var giveRole: [UInt64: String] = [406145333916205076: "@everyone"]
 var testChannel: UInt64 = 441783256699109386
 
 /// The Apple Bot default status
-var status: String = "with my WWDC Ticket"
+var status: String = "with my iPhone X"
 
 /// Assignable roles
 ///

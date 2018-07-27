@@ -92,20 +92,20 @@ class InfractionManagement {
             bot.getGuild(sf, rest: true) { (g, e: RequestError?) in
                 if g != nil {
                     if FileManager.default.fileExists(atPath: path) {
-                        message("Infraction table found for guild \(g!.name)")
+                        ABLogger.log(action: "Infraction table found for guild \(g!.name)")
                     } else {
-                        error("Infraction table missing for guild \(g!.name)", error: "Infraction table will be created after first user infraction")
+                        ABLogger.log(action: "Infraction table missing for guild \(g!.name), Infraction table will be created after first user infraction")
                     }
                 } else {
                     if e != nil {
-                        error("Could not get guild name.", error: e!.message)
+                        ABLogger.log(action: "Could not get guild name. Error: \(e!.message)")
                     } else {
-                        print("Guild not found, no error found")
+                        ABLogger.log(action: "Guild not found, no error found attempting to recover infraction data")
                     }
                     if FileManager.default.fileExists(atPath: path) {
-                        message("Infraction table found for guild \(guild)")
+                        ABLogger.log(action: "Infraction table found for guild \(guild)")
                     } else {
-                        error("Infraction table missing for guild \(guild)", error: "Infraction table will be created after first user infraction")
+                        ABLogger.log(action: "Infraction table missing for guild \(guild), Infraction table will be created after first user infraction")
                     }
                 }
             }
