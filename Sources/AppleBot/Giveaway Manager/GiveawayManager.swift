@@ -8,6 +8,8 @@
 import Sword
 import Foundation
 
+// TODO: Rework me to be cross server compatible
+
 class Giveaway {
     
     static let manager = Giveaway()

@@ -10,6 +10,9 @@
 import Sword
 import Foundation
 
+// TODO: Rework my core so that I am more cross server friendly (such as what server errors log onto, where things log into)
+// TODO: Allow for optional peramaters on all user facing data to prevent possible crashing in non-test enviroments
+
 /// Guilds approved for use with Apple Bot
 let approvedServers: [UInt64] = [406145333916205076, 450744862883577858]
 

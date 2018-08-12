@@ -7,6 +7,8 @@
 
 import Sword
 
+// TODO: Redo the help documentation for users
+
 class help {
     func getHelp(dm: DM, msg: Message) {
         Parser().parse(msg: msg, hasModifier: false) { (p, e) in

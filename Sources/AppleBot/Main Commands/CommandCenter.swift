@@ -10,6 +10,8 @@ import Sword
 
 class CommandCenter {
     
+    // TODO: Need Better Command Center... Again...
+    
     func commandCheck(_ command: String, msg: Message) {
         
         bot.getGuild(Snowflake(rawValue: Parser.getGuildID(msg: msg))) { (guild, err) in
@@ -197,6 +199,9 @@ class CommandCenter {
                         if p.remainder! == "offline" {
                             bot.editStatus(to: "offline")
                             ABLogger.log(action: "Status set to offline")
+                        } else if p.remainder! == "online" {
+                            bot.editStatus(to: "online", playing: nil)
+                            ABLogger.log(action: "Status set to online with no playing message")
                         } else {
                             status = p.remainder!
                             bot.editStatus(to: "online", playing: p.remainder!)

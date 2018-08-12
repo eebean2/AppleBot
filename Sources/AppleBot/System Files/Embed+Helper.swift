@@ -28,6 +28,8 @@ class EmbedReply {
         to.reply(with: embed)
     }
     
+    // TODO: Custom Error Title
+    
     func error(on: Message, error: String?) {
         embed.title = "Error"
         embed.description = error

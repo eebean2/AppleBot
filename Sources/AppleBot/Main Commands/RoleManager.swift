@@ -8,6 +8,8 @@
 import Foundation
 import Sword
 
+// TODO: Finish me also please...
+
 var rmRole:String?
 var rmCategory:String?
 var rmEmoji:String?

@@ -7,6 +7,8 @@ let bot = Sword(token: botToken)
 
 botStartup()
 
+// TODO: More logging here to ABLogger
+
 bot.on(Event.guildIntegrationsUpdate) { data in
 //    print("GUILD INTERACTIONS UPDATE FOLLOWING\n")
 //    print(data as! Guild)

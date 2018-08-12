@@ -7,6 +7,8 @@
 
 import Foundation
 
+// TODO: Clean me up!
+
 class ABLogger {
     
     private init() { }

@@ -8,6 +8,8 @@
 import Sword
 import Foundation
 
+// TODO: Finish me please...
+
 enum InfractionType: String {
     case kick = "Kick"
     case ban = "Ban"
