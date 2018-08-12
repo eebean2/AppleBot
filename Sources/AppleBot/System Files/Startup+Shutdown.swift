@@ -34,6 +34,8 @@ func botStartup() {
             error("No settings found, using defaults.", error: "These will be saved next time you shutdown. You will have to custimize the bot commands, status, and more. Use !help to access the quick help guide.")
         }
     }
+    ABLogger.log(action: "Pulling out the censorship guns")
+    ABCensor.main.lockAndLoad()
     ABLogger.log(action: "Setting up GCD Timer (ABTimer) to clean up logs")
     t = ABTimer(timeInterval: 86400, repeats: true) { timer in
         ABLogger.log(action: "Timer setup, cleaning up logs, will repeat every 24 hours at this time.")
@@ -166,4 +168,25 @@ func forceSave(msg: Message) {
         }
     }
     isSaving = false
+}
+
+func loadToken() -> String {
+    ABLogger.log(action: "NOTICE: Bot Token Requested")
+    #if os(macOS)
+    var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
+    #else
+    var path = Bundle.main.executablePath!
+    #endif
+    path.append("/AppleBot/token.txt")
+    if FileManager.default.fileExists(atPath: path) {
+        do {
+            return try String(contentsOf: URL(fileURLWithPath: path))
+        } catch let error {
+            ABLogger.log(action: "NOTICE: An error occurred when attempting to load the token. ERROR: \(error.localizedDescription)")
+            fatalError("Could not load Bot Token. Error: \(error.localizedDescription)")
+        }
+    } else {
+        ABLogger.log(action: "NOTICE: An error occurred when attempting to load the bot token. ERROR: Token does not exist at \(path)")
+        fatalError("Could not load Bot Token. Error: Token does not exist at \(path)")
+    }
 }

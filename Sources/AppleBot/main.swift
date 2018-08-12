@@ -1,6 +1,8 @@
 import Sword
 import Foundation
 
+let botToken = loadToken()
+
 let bot = Sword(token: botToken)
 
 botStartup()
@@ -30,7 +32,7 @@ bot.on(Event.guildDelete) { data in
 
 bot.on(.messageCreate) { data in
     let msg = data as! Message
-    if ABCensor.wordCheck(phrase: msg.content) {
+    if ABCensor.main.check(msg.content) {
         msg.delete()
         EmbedReply().error(on: msg, error: "Oh no! We had to delete that! Your message contained an invalid character or phrase!")
         error("`\(msg.content)` removed for illegal character or phrase.")

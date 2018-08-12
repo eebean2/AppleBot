@@ -98,7 +98,7 @@ class ABLogger {
                         print("Failed to create file! upper failure")
                         error("Logging Error", error: "Failed to create file! Upper Failure")
                     } else {
-                        print("File created!")
+                        print("Log File Created!")
                     }
                 } else {
                     do {
@@ -108,7 +108,7 @@ class ABLogger {
                             print("Failed to create file! mid failure")
                             error("Logging Error", error: "Failed to create file! Mid Failure")
                         } else {
-                            print("File created!")
+                            print("Log File Created!")
                         }
                     } catch let err {
                         error("Logging Error", error: err.localizedDescription)
@@ -122,7 +122,7 @@ class ABLogger {
                         print("Failed to create file! lower failure")
                         error("Logging Error", error: "Failed to create file! Lower Failure")
                     } else {
-                        print("File created!")
+                        print("Log File Created!")
                     }
                 } catch let err {
                     error("Logging Error", error: err.localizedDescription)

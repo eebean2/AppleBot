@@ -87,7 +87,7 @@ class InfractionManagement {
     func checkInfractionTables() {
         for guild in approvedServers {
             var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
-            path.append("/AppleBot/\(guild).plist")
+            path.append("/AppleBot/Infractions/\(guild).plist")
             let sf = Snowflake(rawValue: guild)
             bot.getGuild(sf, rest: true) { (g, e: RequestError?) in
                 if g != nil {

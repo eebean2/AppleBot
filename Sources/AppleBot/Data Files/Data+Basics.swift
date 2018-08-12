@@ -28,9 +28,6 @@ var commandPerms: [UInt64: [[String: [UInt64]]]] = [406145333916205076:[[Command
 /// Detect if the bot is saving or retriving information from disc
 var isSaving = false
 
-/// Bot Token for interacting with the Discord API
-var botToken: String =
-
 /// Where the bot channel is located for a guild
 var botChannel: [UInt64: UInt64] = [406145333916205076: 441783256699109386]
 
