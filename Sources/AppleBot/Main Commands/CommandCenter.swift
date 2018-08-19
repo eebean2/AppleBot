@@ -241,21 +241,17 @@ class CommandCenter {
                             }
                             var list = String()
                             var rlist = String()
-                            for perms in commandPerms[Parser.getGuildID(msg: msg)]! {
-                                for perm in perms {
-                                    list.append("**\(perm.key):** ")
-                                    for id in perm.value {
-                                        for role in roles! {
-                                            if role.id.rawValue == id {
-                                                if rlist != "" {
-                                                    rlist.append(", ")
-                                                }
-                                                rlist.append(role.name)
+                            for perm in commandPerms[Parser.getGuildID(msg: msg)]! {
+                                list.append("**\(perm.key):** ")
+                                for id in perm.value {
+                                    for role in roles! {
+                                        if role.id.rawValue == id {
+                                            if rlist != "" {
+                                                rlist.append(", ")
                                             }
+                                            rlist.append(role.name)
                                         }
                                     }
-                                    list.append(rlist)
-                                    rlist = ""
                                 }
                             }
                             EmbedReply().reply(to: msg, title: "Permission List", message: list, color: .system)
@@ -371,10 +367,8 @@ class CommandCenter {
         if commandPerms.keys.contains(guild) {
             let perms = commandPerms[guild]!
             for i in perms {
-                for p in i {
-                    if p.key == command.string {
-                        return true
-                    }
+                if i.key == command.string {
+                    return true
                 }
             }
         }
@@ -384,28 +378,23 @@ class CommandCenter {
     func setCommandPerm(guild: UInt64, command: Command, role: [UInt64], msg: Message) {
         if commandPerms.keys.contains(guild) {
             var perms = commandPerms[guild]!
-            perms.append([command.string: role])
+            perms[command.string] = role
             commandPerms[guild] = perms
         } else {
-            commandPerms[guild] = [[command.string: role]]
+            commandPerms[guild] = [command.string: role]
         }
         msg.reply(with: "The command \(command.string) has been saved!")
     }
     
     func updateCommandPerm(guild: UInt64, command: Command, role: [UInt64], msg: Message) {
         if !commandPerms.keys.contains(guild) {
-            commandPerms[guild] = [[command.string: role]]
+            commandPerms[guild] = [command.string: role]
         } else {
-            let perms = commandPerms[guild]!
-            var v = role
-            for i in perms {
-                for p in i {
-                    if p.key == command.string {
-                        v.append(contentsOf: p.value)
-                        v = Array(Set(v))
-                    }
-                }
-            }
+            var perms = commandPerms[guild]!
+            var roles = perms[command.string]!
+            roles.append(contentsOf: role)
+            perms[command.string] = roles
+            commandPerms[guild] = perms
         }
         msg.reply(with: "The command \(command.string) has been updated!")
     }

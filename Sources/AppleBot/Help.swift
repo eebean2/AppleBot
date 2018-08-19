@@ -15,7 +15,7 @@ class help {
             if e != nil {
                 error("There was an error getting help", error: "Please try again later", inReplyTo: msg)
             } else {
-                var restricted = [[String: [UInt64]]]()
+                var restricted = [String: [UInt64]]()
                 if commandPerms[Parser.getGuildID(msg: msg)] != nil {
                     restricted = commandPerms[Parser.getGuildID(msg: msg)]!
                 }

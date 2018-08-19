@@ -23,10 +23,10 @@ let creator: UInt64 = 204675713813446656
 var indicator: [UInt64: String] = [:]
 
 /// Limit commands to specific roles, such as !ping to only mods and admins
-/// This is structured as [Guild: [[Command: [Role]]]]
+/// This is structured as [Guild: [Command: [Roles]]]
 ///
-/// Example: [Apple Discord: [[Ping: [Mods, Admin], Test: [Admin]]]
-var commandPerms: [UInt64: [[String: [UInt64]]]] = [406145333916205076:[[Command.uptime.string: [406159775815172108]]]]
+/// Example: [Apple Discord: [Ping: [Mods, Admin], Test: [Admin]]]
+var commandPerms: [UInt64: [String: [UInt64]]] = [406145333916205076:[Command.uptime.string: [406159775815172108]]]
 
 /// Detect if the bot is saving or retriving information from disc
 var isSaving = false

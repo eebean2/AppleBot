@@ -104,7 +104,7 @@ class Parser {
     
     func getPreferances() -> NSDictionary {
         var pref = [NSString: Any]()
-        pref["commandperms"] = commandPerms as [NSNumber: [[NSString: [NSNumber]]]]
+        pref["commandperms"] = commandPerms as [NSNumber: [NSString: [NSNumber]]]
         pref["indicator"] = indicator
         pref["botchannel"] = botChannel
         pref["status"] = status
@@ -114,7 +114,7 @@ class Parser {
     }
     
     func parsePreferances(from dict: NSDictionary) {
-        commandPerms = dict["commandperms"] as! [UInt64: [[String: [UInt64]]]]
+        commandPerms = dict["commandperms"] as! [UInt64: [String: [UInt64]]]
         indicator = dict["indicator"] as! [UInt64: String]
         botChannel = dict["botchannel"] as! [UInt64: UInt64]
         status = dict["status"] as! String
@@ -153,26 +153,24 @@ class Parser {
         return msg.mentionedRoles.first?.rawValue ?? 000000000000000000
     }
     
-    static func permissionCheck(perms: [[String: [UInt64]]], command: String, msg: Message) -> Bool {
+    static func permissionCheck(perms: [String: [UInt64]], command: String, msg: Message) -> Bool {
         var id = [UInt64]()
         let uroles = Parser.getRoles(msg: msg)
         var urid = [UInt64]()
         for r in uroles! {
             urid.append(r.id.rawValue)
         }
-        for i in perms {
-            if !i.keys.contains(command) {
-                return true
-            }
-            for p in i {
-                if p.key == command {
-                    id = p.value
-                    let j = urid.filter{id.contains($0)}
-                    if !j.isEmpty {
-                        return true
-                    } else {
-                        return false
-                    }
+        if !perms.keys.contains(command) {
+            return true
+        }
+        for p in perms {
+            if p.key == command {
+                id = p.value
+                let j = urid.filter{id.contains($0)}
+                if !j.isEmpty {
+                    return true
+                } else {
+                    return false
                 }
             }
         }
