@@ -15,7 +15,6 @@ var t: ABTimer!
 func botStartup() {
     bot.editStatus(to: "online")
     message("Apple Bot is Now Starting", message: "Commands will not be usable until Apple Bot is fully loaded")
-    message("NOTICE: Startup messages have been moved to the log. This message will be removed at a future time.")
     ABLogger.log(action: "~~ Startup Started ~~")
     isSaving = true
     #if os(macOS)

@@ -10,6 +10,7 @@ import Foundation
 
 // TODO: Finish me please...
 
+@available(*, deprecated)
 enum InfractionType: String {
     case kick = "Kick"
     case ban = "Ban"
@@ -31,6 +32,7 @@ enum InfractionType: String {
 }
 
 class InfractionManagement {
+    @available(*, deprecated)
     func new(_ infraction: Infraction, onGuild guild: UInt64) {
         let gs = Snowflake(rawValue: guild)
         switch infraction.type {
@@ -64,29 +66,50 @@ class InfractionManagement {
 //        saveInfractionTable(inf: infraction, guild: guild)
     }
     
+    @available(*, deprecated)
     func summary(_ user: UInt64, onGuild guild: UInt64, withMsg msg: Message) {
         
     }
     
+    @available(*, deprecated)
     func delete(_ infraction: Infraction, onGuild guild: UInt64) {
         
     }
     
+    @available(*, deprecated)
     func delete(_ id: Int, onGuild guild: UInt64) {
         
     }
     
+    @available(*, deprecated)
     func edit(_ id: Int, with: Infraction, onGuild guild: UInt64) {
         
     }
     
+    @available(*, deprecated)
     func getInfractionTable() -> [String: Any] {
         let it = [String: Any]()
         
         return it
     }
     
-    func checkInfractionTables() {
+    @available(*, deprecated)
+    func checkInfractionTables(_ ignoreReturn: Bool = false) {
+        
+        var guilds = approvedServers; guilds.append(0)
+        for guild in guilds {
+            StrikeManager.main.fileCheck(guild: guild)
+        }
+        
+        
+        // Here we return the function to avoid running deprecated code
+        
+        if !ignoreReturn {
+            return
+        }
+        
+        // The remainder of this is now deprecated but will remain for future referance
+        
         for guild in approvedServers {
             var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
             path.append("/AppleBot/Infractions/\(guild).plist")
@@ -115,10 +138,12 @@ class InfractionManagement {
         }
     }
     
+    @available(*, deprecated)
     func loadInfractionTable() -> NSDictionary {
         return NSDictionary()
     }
     
+    @available(*, deprecated)
     func saveInfractionTable(inf: Infraction, guild: UInt64) {
         print("New infraction on Guild: \(guild)")
         print("ID: \(inf.id)")
@@ -142,18 +167,27 @@ class InfractionManagement {
         }
     }
     
+    @available(*, deprecated)
     func infParser(msg: Message, completion: (_ infraction: Infraction?, _ error: Error?) -> Void){
         Parser().parse(msg: msg, hasModifier: false) { (p, e) in
+            
+            var reason: String?
+            var expTime: Date?
+            
             if let e = e {
                 completion(nil, e)
             } else {
                 print("Infraction: \(InfractionType.getType(p.command!)?.string ?? "No Infraction Type Found")")
                 print("Offender: \(p.against?.username ?? "Offender Username not found")")
+                if p.against == nil {
+                    error("Oh No!", error: "You cannot give an infraction to nobody!", inReplyTo: msg)
+                    return
+                }
                 if !p.remainderSeporated!.isEmpty, let remainderSeporated = p.remainderSeporated {
                     let time = remainderSeporated.first
                     if time?.last == "m".first || time?.last == "d".first || time?.last == "s".first {
-                        print("Reason: \(remainderSeporated.dropFirst().joined(separator: " "))")
-                        print("Infraction Time: \(time!)")
+                        
+                        reason = remainderSeporated.dropFirst().joined(separator: " ")
                     } else {
                         completion(nil, ParserError.missingTime)
                     }
@@ -165,6 +199,7 @@ class InfractionManagement {
         }
     }
     
+    @available(*, deprecated)
     private func mutedExist(msg: Message, completion: @escaping (Bool, RequestError?) -> Void) {
         msg.member?.guild?.getRoles(then: { (roles, requestError) in
             if let err = requestError {
@@ -180,6 +215,7 @@ class InfractionManagement {
         })
     }
     
+    @available(*, deprecated)
     private func createMuted(msg: Message) {
         let muted: [String: Any] = [
             "name": "Muted",
@@ -194,8 +230,24 @@ class InfractionManagement {
     }
 }
 
+// Infraction Format for Reading and Writing
+//
+// -------------------------------------
+// | INFN | UInt64 | Infraction Number |
+// | OFFN | UInt64 | Offender          |
+// | TYPE | String | Infraction Type   |
+// | ACCU | UInt64 | Accuser           |
+// | OCUR | Date   | Infraction Date   |
+// | EXPD | Date   | Experation Date   |
+// | REAS | String | Reason            |
+// | MESG | UInt64 | Message ID        |
+// | GILD | UInt64 | Guild ID          |
+// -------------------------------------
+//
+// OLD FORMAT, see Wookiee 5 Step
+@available(*, deprecated)
 struct Infraction {
-    var id: Int
+    var id: UInt64
     var reason: String?
     var type: InfractionType
     var offender: User?
@@ -219,18 +271,31 @@ struct Infraction {
     
     func dictionary() -> [String: Any] {
         var d = [String: Any]()
-        d["id"] = id
-        d["reason"] = reason
-        d["type"] = type.rawValue
-        d["offender"] = offender
-        d["accuser"] = accuser
-        d["on"] = occuredOn
-        d["expires"] = expiresOn
+        d["INFN"] = id
+        d["OFFN"] = offender
+        d["TYPE"] = type.rawValue
+        d["ACCU"] = accuser
+        d["OCUR"] = occuredOn
+        d["EXPD"] = expiresOn
+        d["REAS"] = reason
+        if msg != nil {
+            d["MESG"] = msg!.id.rawValue
+        }
+        if msg != nil {
+            d["GILD"] = Parser.getGuildID(msg: msg!)
+        }
         return d
     }
     
+    func stringValue() -> String {
+        let dict = dictionary()
+        return (dict.compactMap({ (key, value) -> String in
+            return "\(key)=\(value)"
+        }) as Array).joined(separator: ";")
+    }
+    
     mutating func from(_ data: [String: Any]) {
-        id = data["id"] as! Int
+        id = data["id"] as! UInt64
         reason = data["reason"] as? String
         type = InfractionType(rawValue: data["type"] as! String)!
         offender = data["offender"] as? User
@@ -240,6 +305,7 @@ struct Infraction {
     }
 }
 
+@available(*, deprecated)
 enum InfractionPermissions {
     case kick
     case ban
