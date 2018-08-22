@@ -65,15 +65,18 @@ class ABLogger {
     }
     
     private func logToFile(_ string: String) {
-        let string = "\(Date())| \(string)"
+        let df = DateFormatter()
+        df.locale = Locale.current
+        df.dateFormat = "yyyy-MM-dd_HH:mm:ss"
+        let string = "\(df.string(from: Date()))| \(string)"
         #if os(macOS)
         var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
         #else
         var path = Bundle.main.executablePath!
         #endif
-        let df = DateFormatter()
-        df.dateFormat = "YYYY-MM-DD"
-        var file = path; file.append("/AppleBot/Logs/com.AppleBot.\(df.string(from: Date())).txt")
+        var ld = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
+        ld = ld.replacingOccurrences(of: "/", with: "-")
+        var file = path; file.append("/AppleBot/Logs/com.AppleBot.\(ld).txt")
         if FileManager.default.fileExists(atPath: file) {
             if let fileHandle = FileHandle(forWritingAtPath: file) {
                 defer {
