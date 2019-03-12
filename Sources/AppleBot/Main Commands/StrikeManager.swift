@@ -81,7 +81,7 @@ class StrikeManager {
     static let main = StrikeManager()
     private init() { }
     
-    #warning("STRIKE NOT FINISHED")
+//    #warning("STRIKE NOT FINISHED")
     func strike(_ strike: Strike) {
         if strike.mute {
             mute(strike)
@@ -157,7 +157,7 @@ class StrikeManager {
     
     private func read(userID id: UInt64, guild: UInt64 = 0) -> String? {
         #if os(macOS)
-        var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
+//        var path = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
         #else
         var path = Bundle.main.executablePath!
         #endif

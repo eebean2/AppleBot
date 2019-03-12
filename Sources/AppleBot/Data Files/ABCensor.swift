@@ -46,7 +46,7 @@ class ABCensor {
             isActive = false
             return false
         }
-        if phrase.isEmpty || phrase.isNull || phrase == "" { return false }
+        if phrase.isEmpty || phrase == "" { return false }
         var passFail = false
         for i in list {
             passFail = phrase.contains(i)

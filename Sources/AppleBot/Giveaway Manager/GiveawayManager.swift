@@ -153,7 +153,7 @@ class Giveaway {
                 error("Apple Bot had an error starting your giveaway, please try again", error: err.message)
             } else if let message = message {
                 self.id = message.id.rawValue
-                message.add(reaction: "🎟", then: { err in
+                message.addReaction("🎟", then: { err in
                     if let err = err {
                         message.delete()
                         error("Apple Bot had an error starting your giveaway, please try again", error: err.message)

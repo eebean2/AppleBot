@@ -305,15 +305,16 @@ class CommandCenter {
         // MARK:- Infraction Commands
         // MARK: Tempmute
         
-        if command == "tempmute" {
-            InfractionManagement().infParser(msg: msg) { (inf, e) in
-                if let e = e {
-                    error("Infraction Parsing Error", error: e.localizedDescription, inReplyTo: msg)
-                } else if let inf = inf {
-                    InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
-                }
-            }
-            
+        // Command disabled
+//        if command == "tempmute" {
+//            InfractionManagement().infParser(msg: msg) { (inf, e) in
+//                if let e = e {
+//                    error("Infraction Parsing Error", error: e.localizedDescription, inReplyTo: msg)
+//                } else if let inf = inf {
+//                    InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
+//                }
+//            }
+        
 //            Parser().parse(msg: msg, hasModifier: false) { (p, e: ParserError?) in
 //                if e != nil {
 //                    error("An unknown error occured", inReplyTo: msg)
@@ -322,7 +323,7 @@ class CommandCenter {
 //                    InfractionManagement().new(inf, onGuild: Parser.getGuildID(msg: msg))
 //                }
 //            }
-        }
+//        }
         
         // MARK: New Infraction Command Here
         

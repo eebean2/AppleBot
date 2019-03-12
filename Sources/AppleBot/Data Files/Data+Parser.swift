@@ -76,6 +76,7 @@ class Parser {
         if against != nil {
             if hasModifier && comp.count > 3 {
                 reason = comp.dropFirst(3).joined(separator: " ")
+                
                 remainderSeporated = comp.dropFirst(3).array
             } else if !hasModifier && comp.count > 1 {
                 reason = comp.dropFirst(2).joined(separator: " ")

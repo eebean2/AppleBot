@@ -171,8 +171,8 @@ class InfractionManagement {
     func infParser(msg: Message, completion: (_ infraction: Infraction?, _ error: Error?) -> Void){
         Parser().parse(msg: msg, hasModifier: false) { (p, e) in
             
-            var reason: String?
-            var expTime: Date?
+//            var reason: String?
+//            var expTime: Date?
             
             if let e = e {
                 completion(nil, e)
@@ -187,7 +187,7 @@ class InfractionManagement {
                     let time = remainderSeporated.first
                     if time?.last == "m".first || time?.last == "d".first || time?.last == "s".first {
                         
-                        reason = remainderSeporated.dropFirst().joined(separator: " ")
+//                        reason = remainderSeporated.dropFirst().joined(separator: " ")
                     } else {
                         completion(nil, ParserError.missingTime)
                     }
@@ -217,13 +217,13 @@ class InfractionManagement {
     
     @available(*, deprecated)
     private func createMuted(msg: Message) {
-        let muted: [String: Any] = [
-            "name": "Muted",
-            "permissions": 0,
-            "color": 0x808080,
-            "hoist": false,
-            "mentionable": false
-        ]
+//        let muted: [String: Any] = [
+//            "name": "Muted",
+//            "permissions": 0,
+//            "color": 0x808080,
+//            "hoist": false,
+//            "mentionable": false
+//        ]
 //        msg.member?.guild?.createRole(with: muted, then: { (role, error) in
 //            // code here
 //        })

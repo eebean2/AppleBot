@@ -16,7 +16,7 @@ class ABLogger {
     private var timer: ABTimer!
     
     static func log(username: String, guild: String, command: String) {
-        ABLogger.logger.logToFile("User: \(username) | Guild: \(guild) | Command: \(command.string)")
+        ABLogger.logger.logToFile("User: \(username) | Guild: \(guild) | Command: \(command)")
     }
     
     static func log(action: String) {

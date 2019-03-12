@@ -43,7 +43,7 @@ func botStartup() {
     ABLogger.log(action: "Setting bot status to online, status is \"\(status)\"")
     bot.editStatus(to: "online", playing: status)
     ABLogger.log(action: "Loading infraction tables")
-    InfractionManagement().checkInfractionTables()
+//    InfractionManagement().checkInfractionTables()
     isSaving = false
     message("Apple Bot is ready to use!")
     ABLogger.log(action: "~~ Startup Finished ~~")
@@ -186,6 +186,7 @@ func loadToken() -> String {
         }
     } else {
         ABLogger.log(action: "NOTICE: An error occurred when attempting to load the bot token. ERROR: Token does not exist at \(path)")
+        print("Could not load Bot Token. Error: Token does not exist at \(path)")
         fatalError("Could not load Bot Token. Error: Token does not exist at \(path)")
     }
 }

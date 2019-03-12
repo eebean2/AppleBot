@@ -42,8 +42,7 @@ class ABTimer {
             guard let strongSelf = self else { return }
             block?(strongSelf)
         }
-        let date = fire.timeIntervalSinceNow
-        DispatchQueue.global().asyncAfter(deadline: .init(secondsFromNow: date)) {
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(fire.timeIntervalSinceNow))) {
             self.timer.resume()
         }
     }
